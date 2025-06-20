@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage[italian]{babel}
+\usepackage{textalpha}
+\usepackage{titlesec} % Per personalizzare i titoli delle sezioni e dei paragrafi
+\usepackage{setspace}
+\usepackage{titletoc}
+\usepackage{imakeidx}
+\usepackage{caption}
+%\usepackage{fancyhdr}
+\usepackage{lipsum}
+\usepackage{multicol}
+\usepackage[colorlinks=true, allcolors=black]{hyperref}
+\usepackage[font=small]{caption}
+\usepackage[most]{tcolorbox}
+
+% ambiente per teoremi
+\newtheorem{theorem}{Teorema}[section]
+
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+\setlength{\parindent}{12pt}
+\pretolerance=10000
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
+\titleformat{\paragraph}[block]{\normalfont\normalsize\bfseries\centering}{}{}{} %Centratura titoli paragrafi, vedi 4.5.2
+\frenchspacing
+\makeindex
+\linespread{1.5}
+\captionsetup{font=small}
+
+\begin{document}
+\pagenumbering{gobble}
+
+\include{cover.tex}
+\newpage
+\
+\newpage
+\vfill
+Dichiaro che il sottoscritto, nonché autore del
+documento, è il responsabile del suo contenuto, e per le parti tratte da altri lavori, queste vengono espressamente dichiarate
+citando le fonti.
+\newpage
+\
+\newpage
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+%\pagestyle{fancy}
+
+% Capitoli
+\include{capitoli/01.introduzione}
+\include{capitoli/02.teoria}
+\include{capitoli/03.metodo}
+\include{capitoli/04.test}
+\include{capitoli/05.conclusioni}
+
+
+% Bibliografia
+\bibliographystyle{IEEEtran.bst}  
+\bibliography{bibliografia}
+
+\end{document}

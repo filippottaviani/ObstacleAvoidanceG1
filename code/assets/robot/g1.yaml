@@ -1,0 +1,51 @@
+robot:
+  class: omni.isaac.orbit.robot.Robot
+  config:
+    meta_info:
+      usd_path: "home/ros2_ws/src/obstacle_avoidance_g1/code/robot_description/g1_12dof_with_sensors.usd"
+      base_link: "pelvis"
+    init_state:
+      pos: [0.0, 0.0, 1.0]
+      rot: [0.0, 0.0, 0.0, 1.0]
+
+    # sensori
+    sensors:
+      imu_sensor:
+        sensor_type: "imu"
+        params:
+          attach_link: "pelvis/imu_in_pelvis"
+
+      lidar_sensor:
+        sensor_type: raycast
+        params:
+          attach_link: "pelvis/torso_link/mid360_link" 
+          offset: [0.0, 0.0, 0.0]
+          direction: "forward"
+          num_rays: 40
+          horizontal_fov: 360.0
+          vertical_fov: 0.0
+          min_range: 0.1
+          max_range: 70.0
+          
+      camera_rgbd:
+        sensor_type: camera_rgbd
+        params:
+          attach_link: "pelvis/torso_link/d435_link"
+          offset: [0.0, -0.01848, 0.1]
+          width: 1980
+          height: 1080
+          horizontal_fov: 69.0
+          vertical_fov: 42.0
+          rgb: true
+          depth: true
+
+    # attuatori
+    actuators:
+      legs_actuator:
+        joint_names: ["left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint", "left_knee_joint", "left_ankle_pitch_joint", "left_ankle_roll_joint", "right_hip_pitch_joint", "right_hip_roll_joint", "right_hip_yaw_joint", "right_knee_joint", "right_ankle_pitch_joint", "right_ankle_roll_joint"]
+        actuator_type: "velocity"
+        stiffness: 100.0
+        damping: 5.0
+    control:
+      control_type: "velocity"
+      decimation: 4 

@@ -1,0 +1,30 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/filippo/ros2_ws/install/turtlesim_catch_them_all/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/install/realsense2_camera_msgs/local/lib/python3.10/dist-packages",
+        "/home/filippo/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/install/my_robot_interfaces/local/lib/python3.10/dist-packages",
+        "/home/filippo/install/turtlesim_catch_them_all/lib/python3.10/site-packages",
+        "/home/filippo/build/my_py_pkg",
+        "/home/filippo/install/my_py_pkg/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/src/install/turtlesim_catch_them_all/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/src/install/my_py_pkg/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/src/install/my_robot_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/filippo/ros2_ws/install/turtlesim_catch_them_all/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/install/realsense2_camera_msgs/local/lib/python3.10/dist-packages",
+        "/home/filippo/ros2_ws/install/my_py_pkg/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/install/my_robot_interfaces/local/lib/python3.10/dist-packages",
+        "/home/filippo/install/turtlesim_catch_them_all/lib/python3.10/site-packages",
+        "/home/filippo/build/my_py_pkg",
+        "/home/filippo/install/my_py_pkg/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/src/install/turtlesim_catch_them_all/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/src/install/my_py_pkg/lib/python3.10/site-packages",
+        "/home/filippo/ros2_ws/src/install/my_robot_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
