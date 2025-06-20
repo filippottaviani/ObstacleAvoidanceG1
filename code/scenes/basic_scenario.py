@@ -1,6 +1,5 @@
 import isaaclab.sim as sim_utils
 from isaaclab.assets import AssetBaseCfg
-from isaaclab.sim.spawners import CylinderCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass 
 
@@ -30,17 +29,25 @@ class BasicScenarioCfg(InteractiveSceneCfg):
                                       color=(0.75, 0.75, 0.75))
     )
 
-    '''# ostacoli
-    obstacle = AssetBaseCfg(prim_path="/World/Obstacle1",
-                            spawn=sim_utils.spawn_cylinder(translation=[1.0, 0.0, 1.0],
-                                                           prim_path="/World/Obstacle1",
-                                                           cfg=CylinderCfg(height=2.0,
-                                                                            radius=0.5, # misure necessarie
-                                                                            #activate_contact_sensors=True # da attivarte in seguito
-                                                                            )
-                                                            )
-    
-    )'''
+    # ostacoli
+    obstacle = AssetBaseCfg(
+        prim_path="/World/envs/env_.*/Obstacle1",
+        spawn= sim_utils.CylinderCfg(
+            radius=0.2,
+            height=2,
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(
+                disable_gravity=False
+            ),
+            collision_props=sim_utils.CollisionPropertiesCfg(
+                collision_enabled=True
+            ),
+            activate_contact_sensors=True
+        ),
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=(2.0, 0.0, 1.0),
+        )
+
+    )
 
     # marker dell'obiettivo
     # da implementare
