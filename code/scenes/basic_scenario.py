@@ -8,6 +8,7 @@ from robot import g1_cfg
 
 @configclass
 class BasicScenarioCfg(InteractiveSceneCfg):
+    env_spacing: float = 5.0  # Spaziatura dell'ambiente
 
     # robot
     robot = g1_cfg.configuration
@@ -16,7 +17,8 @@ class BasicScenarioCfg(InteractiveSceneCfg):
     rgbd_camera = rgbd_cfg.configuration
     lidar = lidar_cfg.configuration
     imu = imu_cfg.configuration
-    #cont_sensor = contact_cfg.configuration # crea un warning per la mesh
+    cont_sensor_LH = contact_cfg.configuration_LH
+    cont_sensor_RH = contact_cfg.configuration_RH
 
     # ground plane
     ground = AssetBaseCfg(prim_path="/World/defaultGroundPlane",
@@ -31,16 +33,18 @@ class BasicScenarioCfg(InteractiveSceneCfg):
 
     # ostacoli
     obstacle = AssetBaseCfg(
-        prim_path="/World/envs/env_.*/Obstacle1",
+        prim_path="{ENV_REGEX_NS}/Obstacle1",
         spawn= sim_utils.CylinderCfg(
             radius=0.2,
             height=2,
             rigid_props=sim_utils.RigidBodyPropertiesCfg(
                 disable_gravity=False
             ),
+            mass_props=sim_utils.MassPropertiesCfg(mass=100.0),
             collision_props=sim_utils.CollisionPropertiesCfg(
                 collision_enabled=True
             ),
+            physics_material=sim_utils.RigidBodyMaterialCfg(static_friction=1.0),
             activate_contact_sensors=True
         ),
         init_state=AssetBaseCfg.InitialStateCfg(
@@ -49,7 +53,15 @@ class BasicScenarioCfg(InteractiveSceneCfg):
 
     )
 
-    # marker dell'obiettivo
+    '''# marker dell'obiettivo
     # da implementare
+    target = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/Goal",
+        spawn=sim_utils.
 
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=(2.0, 0.0, 1.0),
+        )
+    )
+'''
     

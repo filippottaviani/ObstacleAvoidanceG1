@@ -13,24 +13,34 @@ class TerminationsCfg:
         time_out=True
     )
 
-    # caduta
+    # Caduta del robot
     reset_on_fall = DoneTerm(
-        func=mdp_custom.fallen_reset
+        func=mdp_custom.has_fallen
     )
 
-    '''# fuori dallo spazio di lavoro
-    cart_out_of_bounds = DoneTerm(
-        func=mdp.joint_pos_out_of_manual_limit,
-        params={"g1_cfg": SceneEntityCfg("robot", joint_names=[ "left_knee_joint"]), "bounds": (-3.0, 3.0)},
+    # Fuori dallo spazio di lavoro
+    out_of_bounds = DoneTerm(
+        func=mdp_custom.out_of_manual_bound,
+        params={
+            "max_dist": 5,  # distanza dall'origine 
+            "ref_link": "pelvis"  # link di riferimento 
+        }
+    )
+
+    '''# Colpisce l'ostacolo
+    hit_obstacle = DoneTerm(
+        func=mdp.undesired_contacts,
+        params={
+            "threshold": 0.1,  # soglia di contatto
+            "sensor_cfg": SceneEntityCfg(
+                name="cont_sensor_LH"  # nome del sensore dell'ostacolo
+            ),
+        },
     )'''
 
-    '''# colpisce l'ostacolo
-    contact = DoneTerm(
-        func=mdp.illegal_contact
-        # da parametrizzare
+    '''# raggiunge l'obiettivo
+    reach_goal = DoneTerm(
+        func=mdp_custom.goal_reached
     )'''
-
-    # raggiunge l'obiettivo
-    # da implementare
 
     

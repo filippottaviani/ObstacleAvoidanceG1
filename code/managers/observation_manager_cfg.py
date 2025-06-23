@@ -3,7 +3,7 @@ from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 import isaaclab.envs.mdp.observations as obs
-from managers.mdp.mdp_custom import lidar_pc
+import managers.mdp.mdp_custom as mdp_custom
 
 
 @configclass
@@ -66,16 +66,25 @@ class ObservationsCfg:
             }
         )
     
-        # non supportato??? https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.envs.mdp.html#isaaclab.envs.mdp.observations.image
         # LiDAR point cloud
         lidar_points = ObsTerm(
-            func=lidar_pc,
+            func=mdp_custom.lidar_pc,
             params={
                 "sensor_cfg": SceneEntityCfg(
                     name= "lidar"
                 )
             }
         )
+
+        '''# Assegnazione target [DA IMPLEMENTARE]
+        target_position = ObsTerm(
+            func=mdp_custom.target_position,
+            params={
+                "target": SceneEntityCfg(
+                    name= "target"
+                )
+            }
+        )'''
 
         def __post_init__(self) -> None:
             self.enable_corruption = False

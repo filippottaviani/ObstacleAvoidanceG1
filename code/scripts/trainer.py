@@ -46,7 +46,7 @@ from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecNormalize
 
 from configs.env_config import ObstacleAvoidanceEnvCfg
-from task.humanoid_obstacle_task import * 
+from task.task_register import * 
 #from models.rgbd_feat_extr import CustomCNNFeatureExtractor
 
 

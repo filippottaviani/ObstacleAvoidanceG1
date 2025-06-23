@@ -79,60 +79,80 @@ def pc_number_fixer(pc, num_points):
     return points_sampled 
 
 
+def target_position(env, target): # DA IMPLEMENTARE
+    pass
+
+
 # ================== REWARD ==================
 
-def has_fallen(env, ref_link="pelvis", height_thr=0.25):
+def has_fallen(env, ref_link="pelvis", height_thr=0.3):
     robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link) # link di riferimento
-    #print("Nome link", base_link[1])  # Nome del link di riferimento
+    
     idx = base_link[0][0]  # ID del link di riferimento
     pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
-
-    print("Posizione del link di riferimento:", pos[:, 2].min().item())
+    #print("Altezza del link ", str(base_link[1])," :", pos[:, 2].min().item())
 
     # Controllo altezza
-    if pos[:, 2].min().item() < height_thr:
+    if (pos[:, 2].min().item()) < height_thr:
         print("Il robot è caduto!")
         return True
-
-    return False
+    else:
+        return False
 
 
 def moving(env, ref_link="pelvis", vel_thr=0.1):
     robot = env.scene["robot"] # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link)  # link di riferimento
-    idx = base_link[0]  # ID del link di riferimento
-    pos = robot.data.body_link_pos_w  # Posizione del link di riferimento
+    idx = base_link[0][0]  # ID del link di riferimento
+    vel = robot.data.body_link_vel_w[:,idx,:]  # Posizione del link di riferimento
 
     # Calcola le velocità medie laterali
-    velocity_x = pos[:, idx, 0].mean()
-    velocity_y = pos[:, idx, 1].mean()
+    velocity_x = vel[:, 1].mean()
+    velocity_y = vel[:, 2].mean() 
+    #print(f"Velocità del robot: x={velocity_x}, y={velocity_y}")
 
     if abs(velocity_x) > vel_thr or abs(velocity_y) > vel_thr:  
-        print("Il robot è in movimento!")
-        return True
-        
-    return False
-
-
-# ================== RESET ==================
-
-def fallen_reset(env): 
-
-    if has_fallen(env, ref_link="pelvis", height_thr=0.25):
-        env.scene["robot"].reset() # non funziona
-        print("Il robot è stato rimesso in piedi!")
         return True
     else:
         return False
+
+
+# ================== TERMINATION ==================
+
+def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
+    robot = env.scene["robot"] # Recupera l'entità robot dalla scena
+    base_link = robot.find_bodies(ref_link)  # link di riferimento
+    idx = base_link[0][0] # ID del link di riferimento
+
+    def_root_pos = robot.data.default_root_state[:,:3]
+    env_pos =   env.scene.env_origins
+
+    def_pos = def_root_pos + env_pos  # posizione di default del root link rispetto al mondo
+    act_pos = robot.data.body_link_pos_w[:,idx,:] # posizione attuale del link di riferimento
+    #print("Posizione di default:", def_pos)  
+    #print("Posizione attuale:", act_pos)
+
+    # compute any violations
+    out_of_upper_limits = True if abs(act_pos[:, 0] - def_pos[:, 0]).max() > max_dist else False
+    out_of_lower_limits = True if abs(act_pos[:, 1] - def_pos[:, 1]).max() > max_dist else False
+
+    return out_of_upper_limits or out_of_lower_limits
+
+
+def target_set(env):
+    pass
     
 
-    
+def target_reached(env, ref_link="pelvis", threshold=0.3):
+    robot = env.scene["robot"] # Recupera l'entità robot dalla scena
+    base_link = robot.find_bodies(ref_link)  # link di riferimento
+    idx = base_link[0][0] # ID del link di riferimento
+    robot_pos = robot.data.body_link_pos_w[:,idx,:]
 
-
-
-
-
+    # termina se vicino al target
+    dist = torch.norm(robot_pos, dim=-1)
+    return dist < threshold
 
 
 

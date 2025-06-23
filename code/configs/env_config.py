@@ -10,6 +10,8 @@ from scenes.basic_scenario import BasicScenarioCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.utils import configclass
 
+import torch
+
 
 @configclass
 class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
@@ -23,6 +25,9 @@ class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
     terminations : TerminationsCfg = TerminationsCfg()
     command : CommandsCfg = CommandsCfg()
     curriculum: CurriculumCfg = CurriculumCfg()
+
+    # posizione dell'obiettivo
+    target_position: torch.Tensor = torch.tensor([0.0, 0.0, 0.0], dtype=torch.float32)
 
 
     def __post_init__(self) -> None:
