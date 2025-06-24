@@ -79,8 +79,8 @@ def pc_number_fixer(pc, num_points):
     return points_sampled 
 
 
-def target_position(env, target): # DA IMPLEMENTARE
-    pass
+def target_pos(env, command_name: str) -> torch.Tensor:
+    return env.command_manager.get_command(command_name)
 
 
 # ================== REWARD ==================
@@ -116,6 +116,22 @@ def moving(env, ref_link="pelvis", vel_thr=0.1):
         return True
     else:
         return False
+    
+
+def position_error_tanh(env, std: float, command_name: str) -> torch.Tensor:
+    command = env.command_manager.get_command(command_name)
+    #print("Dimensioni comando:", command.shape, "Valori:", command)
+    des_pos_b = command[:, :3]
+    distance = torch.norm(des_pos_b, dim=1)
+
+    return 1 - torch.tanh(distance / std)
+
+
+def heading_error_abs(env, command_name: str) -> torch.Tensor:
+    command = env.command_manager.get_command(command_name)
+    heading_b = command[:, 3]
+
+    return heading_b.abs()
 
 
 # ================== TERMINATION ==================

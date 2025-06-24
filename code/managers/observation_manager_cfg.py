@@ -76,15 +76,13 @@ class ObservationsCfg:
             }
         )
 
-        '''# Assegnazione target [DA IMPLEMENTARE]
+        # Assegnazione target
         target_position = ObsTerm(
-            func=mdp_custom.target_position,
+            func=mdp_custom.target_pos,
             params={
-                "target": SceneEntityCfg(
-                    name= "target"
-                )
+                "command_name": "target"
             }
-        )'''
+        )
 
         def __post_init__(self) -> None:
             self.enable_corruption = False

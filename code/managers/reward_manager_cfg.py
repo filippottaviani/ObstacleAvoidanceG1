@@ -1,6 +1,7 @@
 from isaaclab.managers import RewardTermCfg, SceneEntityCfg
 from isaaclab.utils import configclass
 from isaaclab.envs import mdp
+#import isaaclab_tasks.manager_based.navigation.mdp as mdp_nav
 from managers.mdp import mdp_custom
 import torch
 
@@ -54,7 +55,7 @@ class RewardsCfg:
             "max_dist": 5,  # limiti di giunzione
             "ref_link": "pelvis"  # link di riferimento per il controllo
         },
-        weight=-2.0
+        weight=-1.0
     )
 
     # Colpisce un ostacolo
@@ -66,19 +67,27 @@ class RewardsCfg:
                 name="cont_sensor_LH"  # nome del sensore dell'ostacolo
             ),
         },
-        weight=-2.0,
+        weight=-0.5,
     )
 
-    '''# Si avvicina all'obiettivo
-    approach_goal = RewardTermCfg(
-        func="isaaclab.envs.mdp.rewards:goal_distance",
+    # Si avvicina all'obiettivo (penalità leggera)
+    position_tracking_soft = RewardTermCfg(
+        func=mdp_custom.position_error_tanh,
         params={
-            "asset_cfg": SceneEntityCfg(name="robot"),
-            "target_cfg": SceneEntityCfg(name="goal"),
-            "normalize": True,
+            "std": 2.0,
+            "command_name": "target"
         },
-        weight=- torch.norm(robot.data.root_pos - self.target_position, dim=-1)
-    )'''
+        weight=1.0
+    )
+
+    # Si avvicina all'obiettivo (penalità pesante positiva)
+    position_tracking_hard = RewardTermCfg(
+        func=mdp_custom.heading_error_abs,
+        params={
+            "command_name": "target"
+        },
+        weight=1.0,
+    )
 
     '''
     # Raggiunge l'obiettivo

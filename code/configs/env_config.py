@@ -23,7 +23,7 @@ class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
     events : EventsCfg = EventsCfg()
     rewards : RewardsCfg = RewardsCfg()
     terminations : TerminationsCfg = TerminationsCfg()
-    command : CommandsCfg = CommandsCfg()
+    commands : CommandsCfg = CommandsCfg()
     curriculum: CurriculumCfg = CurriculumCfg()
 
     # posizione dell'obiettivo
