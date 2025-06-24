@@ -26,9 +26,6 @@ class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
     commands : CommandsCfg = CommandsCfg()
     curriculum: CurriculumCfg = CurriculumCfg()
 
-    # posizione dell'obiettivo
-    target_position: torch.Tensor = torch.tensor([0.0, 0.0, 0.0], dtype=torch.float32)
-
 
     def __post_init__(self) -> None:
         # Impostazioni visive

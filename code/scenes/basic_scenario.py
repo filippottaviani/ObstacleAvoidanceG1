@@ -51,18 +51,4 @@ class BasicScenarioCfg(InteractiveSceneCfg):
         init_state=AssetBaseCfg.InitialStateCfg(
             pos=(2.0, 0.0, 1.0),
         )
-
     )
-
-    '''# marker dell'obiettivo
-    # da implementare
-    target = AssetBaseCfg(
-        prim_path="{ENV_REGEX_NS}/Goal",
-        spawn=sim_utils.
-
-        init_state=AssetBaseCfg.InitialStateCfg(
-            pos=(2.0, 0.0, 1.0),
-        )
-    )
-'''
-    

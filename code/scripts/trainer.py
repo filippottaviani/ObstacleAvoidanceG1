@@ -4,15 +4,14 @@ from isaaclab.app import AppLauncher
 
 
 # add argparse arguments
-parser = argparse.ArgumentParser(description="Train an RL agent with Stable-Baselines3.")
-parser.add_argument("--video", action="store_true", default=False, help="Record videos during training.")
-parser.add_argument("--video_length", type=int, default=200, help="Length of the recorded video (in steps).")
-parser.add_argument("--video_interval", type=int, default=2000, help="Interval between video recordings (in steps).")
-parser.add_argument("--disable_fabric", action="store_true", default=False, help="Disable fabric and use USD I/O operations.")
-parser.add_argument("--num_envs", type=int, default=1,help="Number of environments to simulate.")
-parser.add_argument("--task", type=str, default=None, help="Name of the task.")
-parser.add_argument("--seed", type=int, default=None, help="Seed used for the environment")
-parser.add_argument("--max_iterations", type=int, default=None, help="RL Policy training iterations.")
+parser = argparse.ArgumentParser(description="Addestramento per evitamento ostacoli di un robot umanoide.")
+parser.add_argument("--video", action="store_true", default=False, help="Registrazione video durante l'addestramento.")
+parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
+parser.add_argument("--video_interval", type=int, default=2000, help="Intervallo tra registrazioni video (in steps).")
+parser.add_argument("--num_envs", type=int, default=1, help="NUmero di ambienti da simulare.")
+parser.add_argument("--task", type=str, default=None, help="Nome del task.")
+parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
+parser.add_argument("--max_iterations", type=int, default=10000, help="Iterazione per ogni ambiente.")
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
@@ -65,7 +64,7 @@ def main():
 
     # max iterations for training
     if args_cli.max_iterations:
-        agent_cfg["n_timesteps"] = args_cli.max_iterations * agent_cfg["n_steps"] * env_cfg.scene.num_envs
+        agent_cfg["n_timesteps"] = args_cli.max_iterations * env_cfg.scene.num_envs
 
     # Impostazioni log
     root_path = Path.home() / "obstacle_avoidance_g1"/ "code" / "checkpoints"

@@ -24,7 +24,7 @@ class RewardsCfg:
                 joint_names= ["left_hip_pitch_joint","right_hip_pitch_joint"]
             )
         },
-        weight=5.0
+        weight=0.1
     )
     
     # Caduto
@@ -34,7 +34,7 @@ class RewardsCfg:
             "ref_link": "pelvis",
             "height_thr": 0.25 # soglia di altezza minima
         },
-        weight=-5.0
+        weight=-1.0
     )
     
     # Cammina
@@ -45,7 +45,7 @@ class RewardsCfg:
             "ref_link": "pelvis",
             "vel_thr": 0.5 # soglia di velocità minima
         },  
-        weight=10.0
+        weight=0.2
     )
     
     # Fuori dallo spazio di lavoro

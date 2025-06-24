@@ -1,7 +1,4 @@
 import torch
-from isaaclab.utils.math import quat_apply_inverse, yaw_quat
-from isaaclab.managers import SceneEntityCfg
-from isaaclab.envs import mdp
 
 # ================== OBSERVATION ==================
 
@@ -134,6 +131,17 @@ def heading_error_abs(env, command_name: str) -> torch.Tensor:
     return heading_b.abs()
 
 
+'''def target_reached(env, ref_link="pelvis", threshold=0.3):
+    robot = env.scene["robot"] # Recupera l'entità robot dalla scena
+    base_link = robot.find_bodies(ref_link)  # link di riferimento
+    idx = base_link[0][0] # ID del link di riferimento
+    robot_pos = robot.data.body_link_pos_w[:,idx,:]
+
+    # termina se vicino al target
+    dist = torch.norm(robot_pos, dim=-1)
+    return dist < threshold'''
+
+
 # ================== TERMINATION ==================
 
 def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
@@ -154,21 +162,9 @@ def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
     out_of_lower_limits = True if abs(act_pos[:, 1] - def_pos[:, 1]).max() > max_dist else False
 
     return out_of_upper_limits or out_of_lower_limits
-
-
-def target_set(env):
-    pass
     
 
-def target_reached(env, ref_link="pelvis", threshold=0.3):
-    robot = env.scene["robot"] # Recupera l'entità robot dalla scena
-    base_link = robot.find_bodies(ref_link)  # link di riferimento
-    idx = base_link[0][0] # ID del link di riferimento
-    robot_pos = robot.data.body_link_pos_w[:,idx,:]
 
-    # termina se vicino al target
-    dist = torch.norm(robot_pos, dim=-1)
-    return dist < threshold
 
 
 

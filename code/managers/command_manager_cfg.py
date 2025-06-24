@@ -4,6 +4,7 @@ from scenes.basic_scenario import env_spacing
 import isaaclab_tasks.manager_based.navigation.mdp as mdp_nav
 import math
 
+
 env_space = env_spacing
 
 @configclass
