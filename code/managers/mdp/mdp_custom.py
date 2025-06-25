@@ -1,4 +1,4 @@
-import torch
+import torch, math
 
 # ================== OBSERVATION ==================
 
@@ -105,8 +105,8 @@ def moving(env, ref_link="pelvis", vel_thr=0.1):
     vel = robot.data.body_link_vel_w[:,idx,:]  # Posizione del link di riferimento
 
     # Calcola le velocità medie laterali
-    velocity_x = vel[:, 1].mean()
-    velocity_y = vel[:, 2].mean() 
+    velocity_x = vel[:, 0].mean()
+    velocity_y = vel[:, 1].mean() 
     #print(f"Velocità del robot: x={velocity_x}, y={velocity_y}")
 
     if abs(velocity_x) > vel_thr or abs(velocity_y) > vel_thr:  
@@ -115,31 +115,25 @@ def moving(env, ref_link="pelvis", vel_thr=0.1):
         return False
     
 
-def position_error_tanh(env, std: float, command_name: str) -> torch.Tensor:
-    command = env.command_manager.get_command(command_name)
-    #print("Dimensioni comando:", command.shape, "Valori:", command)
-    des_pos_b = command[:, :3]
-    distance = torch.norm(des_pos_b, dim=1)
+def position_error(env, command_name = "target") -> torch.Tensor:
+
+    command_rel = env.command_manager.get_command(command_name) 
+    distance = torch.norm(command_rel[:, :2], dim=1)  # Distanza dal target nel frame robot
+    #print("Distanza dall'obiettivo: ", distance)
+
+    return distance
+
+
+def position_error_tanh(env, std: float, command_name = "target") -> torch.Tensor:
+    distance = position_error(env, command_name)
 
     return 1 - torch.tanh(distance / std)
 
 
-def heading_error_abs(env, command_name: str) -> torch.Tensor:
-    command = env.command_manager.get_command(command_name)
-    heading_b = command[:, 3]
+def target_reached(env,  command_name = "target", threshold=0.3):
+    distance = position_error(env, command_name)   
 
-    return heading_b.abs()
-
-
-'''def target_reached(env, ref_link="pelvis", threshold=0.3):
-    robot = env.scene["robot"] # Recupera l'entità robot dalla scena
-    base_link = robot.find_bodies(ref_link)  # link di riferimento
-    idx = base_link[0][0] # ID del link di riferimento
-    robot_pos = robot.data.body_link_pos_w[:,idx,:]
-
-    # termina se vicino al target
-    dist = torch.norm(robot_pos, dim=-1)
-    return dist < threshold'''
+    return distance < threshold
 
 
 # ================== TERMINATION ==================

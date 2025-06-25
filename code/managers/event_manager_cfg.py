@@ -27,7 +27,7 @@ class EventsCfg:
 
     '''# Raggiunge l'obiettivo
     reach_goal = EventTermCfg(
-        func=mdp_custom.goal_reached,
-        mode="reset"
+        func=mdp_custom.target_reached,
+        mode="terminate"
     )'''
 

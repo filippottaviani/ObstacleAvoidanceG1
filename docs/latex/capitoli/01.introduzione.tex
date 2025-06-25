@@ -38,7 +38,7 @@ Una delle sfide più interessanti della robotica moderna è fornire agli automi 
 
 
 \subsubsection{Evitamento degli ostacoli}
-Nell'ambiente in cui opera il robot possono essere presenti oggetti previsti o non che vanno del tutto aggirati; evenienza non presa in considerazione dalle soluzioni proposte sopra. A seconda del caso in esame, il robot può essere consapevole o meno della presenza degli oggetti che si frappongono tra sé ed il punto di arrivo. Se il robot conosce la posizione degli ostacoli, il suo compito è quello di trovare, se esiste, un percorso fattibile fino all'obiettivo; altrimenti è necessario definire un problema di \textit{obstacle detection} da risolvere mentre il robot esplora. Questo compito richiede di raccogliere dati dai sensori esterocettivi, costruire una stima della mappa sulla base di questi e della \textit{belief}\footnote{la posa attesa del robot stimata dall'algoritmo di localizzazione}, confrontare questa con la mappa reale nota e comprendere se la discrepanza tra di esse evidenzia la presenza di ostacoli inattesi. Infine, occorre ripianificare la traiettoria in maniera coerente con l'obiettivo prefissato della navigazione e con la nuova mappa aggiornata. Le strategie per attuare l'\textit{obstacle avoidance} si basano, quindi, sull'ottimizzazione del compromesso tra: obiettivo generale, velocità e cinematica del robot e rischio di collisioni. Nei casi più complessi gli ostacoli sono in movimento oppure è richiesto interagire con essi per superarli come nel caso di scale o oggetti da arrampicare.
+Nell'ambiente in cui opera il robot possono essere presenti oggetti previsti o non che vanno del tutto aggirati; evenienza non presa in considerazione dalle soluzioni proposte sopra. A seconda del caso in esame, il robot può essere consapevole o meno della presenza degli oggetti che si frappongono tra sé ed il punto di arrivo. Se il robot conosce la posizione degli ostacoli, il suo compito è quello di trovare, se esiste, un percorso fattibile fino all'obiettivo; altrimenti è necessario definire un problema di \textit{obstacle detection} da risolvere mentre il robot esplora. Questo compito richiede di raccogliere dati dai sensori esterocettivi, costruire una stima della mappa sulla base di questi e della \textit{belief}\footnote{la posa attesa del robot stimata dall'algoritmo di localizzazione}, confrontare questa con la mappa reale nota e comprendere se la discrepanza tra di esse evidenzia la presenza di ostacoli inattesi. Infine, occorre ripianificare la traiettoria in maniera coerente con l'obiettivo prefissato della navigazione e con la nuova mappa aggiornata. Le strategie per attuare l'\textit{obstacle avoidance} si basano, quindi, sull'ottimizzazione del compromesso tra: obiettivo generale, velocità e cinematica del robot e rischio di collisioni. Nei casi più complessi, gli ostacoli sono in movimento, oppure è richiesto interagire con essi per superarli come nel caso di scale o oggetti da arrampicare.
 
 
 \subsubsection{Apprendimento per rinforzo}
@@ -52,9 +52,19 @@ La presente trattazione si propone di sviluppare un modello di reinforcement lea
 \subsubsection{Scenari di addestramento}
 La caratteristica fondamentale degli algoritmi basati sul reinforcement learning è la generalizzazione, ossia la capacità di esprimere una politica prestante in scenari sconosciuti e diversi tra loro. Non è di interesse sviluppare un modello in grado di svolgere perfettamente il compito solo nelle condizioni su cui è stato addestrato. Risulta, invece, molto più utile che il modello apprenda le informazioni ad alto livello e i pattern sottesi al rapporto tra le osservazioni che raccoglie e la migliore azione da intraprendere. Ciò permette di confrontarsi con la realtà, la sua variabilità e le sue complesse non idealità. Per ottenere questa capacità è indispensabile fornire alla rete neurale degli ambienti di addestramento complessi e variabili; questo è essenziale per evitare che essa impari lo specifico scenario invece di maturare una comprensione generale del compito. Nel caso preso in esame, si è scelto di procedere per gradi e articolare l'addestramento in tre fasi di difficoltà crescente:
 
+\begin{itemize}
+    \item Scenario di base: presenta un terreno pianeggiante e due ostacoli cilindrici collocati in maniera casuale nello spazio. La posizione obiettivo che il robot deve raggiungere è campionata uniformemente nello spazio di stato.  
+    \item Scenario intermedio:
+    \item Scenario difficile:
+\end{itemize}
+
+L'approccio di generazione aleatoria degli ostacoli, del contesto e dell'obiettivo da raggiungere è indispensabile per fornire al modello capacità di generalizzazione. 
+
+
+
 % tre scenari
 
-\subsubsection{Possibile implementazione reale?}
+\subsubsection{Implementazione reale(?)}
 % possibile implemetazione reale
 
 
@@ -76,7 +86,7 @@ Nella figura \ref{fig:simple_ao} è visibile come il robot, sin dalle prime fasi
 
 
 \subsubsection{Reinforcement learning basato su ostacoli noti}
-Le prime implementazioni di reinforcement learning nell'ambito robotico sono nate per compiti come il \textit{pick and place}\footnote{prendere un oggetto e posizionarlo dove richiesto} per i manipolatori, la guida lungo un tracciato per i robot con ruote o cingoli e la camminata fluida per quelli su gambe o zampe. Una volta raggiunto questo obiettivo, l'interesse si è rivolto, nel caso dei robot mobili, alla navigazione di una mappa evitando ostacoli noti. La richiesta era, dunque, quella di imparare a formulare percorsi fattibili nella mappa che raggiungessero l'obiettivo senza colpire gli oggetti presenti nell'ambiente e, dunque, attuare quanto pianificato. Lo studio di M. Hamze, M. Morisawa e E. Yoshida \cite{hamze2024learning} esemplifica bene questo genere di utilizzo del RL. Viene, infatti, coinvolta una rete neurale che fa inferenza sulla posizione del robot e sulla mappa provvista di ostacoli e di posa da raggiungere. L'uscita della rete invia segnali ad un controllore PD che comanda i giunti. Nell'addestramento per rinforzo descritto nell'articolo vengono definite delle ricompense per il raggiungimento dell'obiettivo e per l'evitamento degli ostacoli allo scopo di ottenere una rete capace di ottimizzare il percorso. Viene osservato che l'algoritmo funziona correttamente se gli ostacoli vengono spostati leggermente rispetto a dove erano previsti, mentre il loro riposizionamento casuale inficia pesantemente la robustezza del sistema. Si arriva alla conclusione che per questa fattispecie di compito sia richiesto l'ausilio della sensoristica. L'articolo risulta comunque utile per la comprensione del rapporto tra reinforcement learning e locomozione bipede.
+Le prime implementazioni di reinforcement learning nell'ambito robotico sono nate per compiti come il \textit{pick and place}\footnote{prendere un oggetto e posizionarlo dove richiesto} per i manipolatori, la guida lungo un tracciato per i robot con ruote o cingoli e la camminata fluida per quelli su gambe o zampe. Una volta raggiunto questo obiettivo, l'interesse si è rivolto, nel caso dei robot mobili, alla navigazione di una mappa evitando ostacoli noti. La richiesta era, dunque, quella di imparare a formulare percorsi fattibili nella mappa che raggiungessero l'obiettivo senza colpire gli oggetti presenti nell'ambiente e, dunque, attuare quanto pianificato. Lo studio di M. Hamze, M. Morisawa e E. Yoshida \cite{hamze2024learning} esemplifica bene questo genere di utilizzo del RL. Viene, infatti, coinvolta una rete neurale che fa inferenza sulla posizione del robot e sulla mappa provvista di ostacoli e di posa da raggiungere. L'uscita della rete invia segnali ad un controllore PD\footnote{controllo proporzionale e derivativo} che comanda i giunti. Nell'addestramento per rinforzo descritto nell'articolo vengono definite delle ricompense per il raggiungimento dell'obiettivo e per l'evitamento degli ostacoli allo scopo di ottenere una rete capace di ottimizzare il percorso. Viene osservato che l'algoritmo funziona correttamente se gli ostacoli vengono spostati leggermente rispetto a dove erano previsti, mentre il loro riposizionamento casuale inficia pesantemente la robustezza del sistema. Si arriva alla conclusione che per questa fattispecie di compito sia richiesto l'ausilio della sensoristica. L'articolo risulta comunque utile per la comprensione del rapporto tra reinforcement learning e locomozione bipede.
 
 
 \subsubsection{Reinforcement learning basato su ostacoli ignoti}
@@ -140,10 +150,16 @@ Il framework mette a disposizione API dedicate per il reinforcement learning\foo
 All’interno di Isaac Lab è disponibile un’ampia libreria di modelli robotici, dai manipolatori industriali ai robot quadrupedi e umanoidi, accompagnata da oltre trenta ambienti predefiniti, pronti per essere utilizzati con framework di reinforcement learning come RSL-RL, SKRL, RL Games e Stable Baselines. Inoltre, attraverso l’estensione Isaac Replicator, è possibile generare dataset sintetici annotati per l’addestramento di modelli di intelligenza artificiale, sfruttando tecniche quali la randomizzazione delle scene e l’annotazione automatica.
 
 
+\subsubsection{Wrapper Stable Baseline}
+% scrivere
+
+
+\subsection{Piattaforma robotica}
+% scrivere di dotazione EAGLE
 \subsubsection{Unitree G1}
 Unitree G1 rappresenta una delle più avanzate implementazioni nel campo della robotica umanoide leggera, progettata per coniugare agilità meccanica, intelligenza artificiale integrata e versatilità operativa in un corpo compatto ed efficiente. Sviluppato dalla cinese Unitree Robotics, già nota per i suoi robot quadrupedi ad alte prestazioni, il G1 si distingue come una piattaforma sperimentale e applicativa pensata per attività indoor e ambienti controllati, con un forte orientamento alla ricerca, alla formazione e alle prime applicazioni commerciali in ambito assistivo e collaborativo. Il G1 è progettato per essere relativamente accessibile, sia in termini di prezzo rispetto ad altri umanoidi bipedi come Figure 01 o Agility Digit, sia in termini di facilità di integrazione software, con pieno supporto a framework ROS (Robot Operating System) e integrazione con ambienti di sviluppo personalizzati come il sopracitato Isaac Sim. La sensoristica, la potenza computazionale e la mobilità flessibile del G1 lo rendono un'ottima piattaforma per la ricerca e lo sviluppo di algoritmi di Reinforcement Learning per l'\textit{obstacle avoidance} che sarà oggetto della trattazione.
 
-%dettagli corpo
+\subsubsection{Corpo}
 Dalla descrizione della scheda tecnica \cite{unitreeManual2025} il G1 presenta un design compatto, è alto 132 cm e pesa circa 35 kg; in Figura \ref{fig:G1} una dimostrazione della sua agilità. Il corpo principale adotta materiali leggeri ad alta resistenza come leghe di alluminio di grado aerospaziale e fibra di carbonio. Nella sua versione di base ha 23 gradi di libertà complessivi, che consentono movimenti coordinati, camminata autonoma, postura dinamica e manipolazione di oggetti. Il robot ha una percezione ambientale avanzata, grazie alla combinazione di camera RGB-D e LiDAR. Dal punto di vista computazionale, il G1 monta una CPU a 8 core ad alte prestazioni che lo rende adatto ad elaborare rapidamente le letture dei sensori e ad attuare algoritmi di controllo complessi. La versione EDU è provvista di un Jetson Orin, un modulo embedded ad alte prestazioni, compatto ed efficiente dal punto di vista energetico, progettato specificamente per l'intelligenza artificiale e la \textit{edge robotics}\footnote{branca della robotica che implementa modelli AI direttamente a bordo dell'automa}. Questa versione del G1 sfrutta quindi tecnologie come CUDA Core\footnote{piattaforma di calcolo parallelo e il modello di programmazione di NVIDIA}, Tensor Core\footnote{unità di elaborazione specializzate nelle operazioni matematiche sui tensori che sono il fondamento del Deep Learning} e acceleratori dedicati. Inoltre, viene equipaggiato di una batteria estraibile da 9000 mAh che permette circa due ore di autonomia.
 
 \begin{figure}[h]
@@ -153,6 +169,7 @@ Dalla descrizione della scheda tecnica \cite{unitreeManual2025} il G1 presenta u
     \label{fig:G1}
 \end{figure}
 
+\subsubsection{Sensoristica}
 Scendendo nel dettaglio della sensoristica esterocettiva, la camera RGB-D montata è un'Intel RealSense D435i che integra un'unità di misura inerziale (IMU) a sei gradi di libertà\footnote{accelerometro a 3 assi e giroscopio a 3 assi}. La profondità non viene direttamente misurata da un sensore specifico ma calcolata utilizzando la visione stereoscopica. A partire dalle immagini di due camere parallele distanti $T$ (\textit{baseline}), si calcola la profondità grazie al teorema dei triangoli simili. Data la lunghezza focale $f$ e le coordinate dell'oggetto nelle immagini delle due camere ($x_r$ e $x_l$) si ricava la distanza $Z$ dell'oggetto dal \textit{piano della baseline} come segue:
 \begin{equation}
     Z=f\frac{T}{x_l-x_r}
@@ -172,7 +189,9 @@ Lo stesso principio regola la misurazione laser semplice di cui il laser rappres
     \label{fig:sensori_g1}
 \end{figure}
 
-% locomozione
+% encoder???
+
+\subsubsection{Locomozione}
 Secondo il manuale di Unitree \cite{unitreeManual2025} l'umanoide ha a disposizione 12 gradi di libertà per la locomozione, entrambe le gambe sono provviste dei seguenti giunti rotanti e relativi limiti di movimento:
 
 \begin{itemize}

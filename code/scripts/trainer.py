@@ -8,10 +8,10 @@ parser = argparse.ArgumentParser(description="Addestramento per evitamento ostac
 parser.add_argument("--video", action="store_true", default=False, help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
 parser.add_argument("--video_interval", type=int, default=2000, help="Intervallo tra registrazioni video (in steps).")
-parser.add_argument("--num_envs", type=int, default=1, help="NUmero di ambienti da simulare.")
+parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default=None, help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
-parser.add_argument("--max_iterations", type=int, default=10000, help="Iterazione per ogni ambiente.")
+parser.add_argument("--max_iterations", type=int, default=100000, help="Iterazione per ogni ambiente.")
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
@@ -26,7 +26,8 @@ app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 
-"""Rest everything follows."""
+######################### TRAINER #########################
+
 
 from isaaclab_rl.sb3 import Sb3VecEnvWrapper, process_sb3_cfg
 from isaaclab.utils.dict import print_dict
@@ -35,14 +36,14 @@ from isaaclab.utils.io import dump_pickle, dump_yaml
 
 import gymnasium as gym
 import numpy as np
-import os
+import os, time
 from datetime import datetime
 from pathlib import Path
 
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.logger import configure
-from stable_baselines3.common.vec_env import VecNormalize
+from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from configs.env_config import ObstacleAvoidanceEnvCfg
 from task.task_register import * 
@@ -102,16 +103,16 @@ def main():
     # Wrap per stable baselines
     env = Sb3VecEnvWrapper(env)
 
-    if "normalize_input" in agent_cfg:
-        env = VecNormalize(
-            env,
-            training=True,
-            norm_obs="normalize_input" in agent_cfg and agent_cfg.pop("normalize_input"),
-            norm_reward="normalize_value" in agent_cfg and agent_cfg.pop("normalize_value"),
-            clip_obs="clip_obs" in agent_cfg and agent_cfg.pop("clip_obs"),
-            gamma=agent_cfg["gamma"],
-            clip_reward=np.inf,
-        )
+    
+    env = VecNormalize(
+        env,
+        training=True,
+        norm_obs="normalize_input" in agent_cfg and agent_cfg.pop("normalize_input"),
+        norm_reward="normalize_value" in agent_cfg and agent_cfg.pop("normalize_value"),
+        clip_obs="clip_obs" in agent_cfg and agent_cfg.pop("clip_obs"),
+        gamma=agent_cfg["gamma"],
+        clip_reward=np.inf
+    )
 
     # Creazione dell'agente
     agent = SAC(policy_arch, env, verbose=1, **agent_cfg)
@@ -120,15 +121,27 @@ def main():
 
     # Callback dell'agente 
     checkpoint_callback = CheckpointCallback(save_freq=10000, save_path=log_dir, name_prefix="model", verbose=2)
-    
+
+    # Debug spazi
+    print(env.observation_space)
+    print(env.action_space)
+
     # Addestramento
+    start_time = time.time()
     agent.learn(total_timesteps=n_timesteps, callback=checkpoint_callback)
+
+    # Segnalazione fine dell'addestramento
+    duration = time.time() - start_time
+    h, r = divmod(duration, 3600)
+    m, s = divmod(r, 60)
+    print(f"Addestramento terminato in {int(h)} ore, {int(m)} minuti e {int(s)} secondi.")
 
     # Salvataggio del modello
     mod_root_path =os.path.join(root_path,"models", task)
     mod_dir = os.path.join(mod_root_path, run_info)
     agent.save(mod_dir, "model")
 
+    # Chiusura env
     env.close()
 
 

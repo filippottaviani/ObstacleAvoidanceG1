@@ -54,6 +54,20 @@ Per trasporre le politiche elaborate durante le simulazioni nell'ambito reale ci
 \subsubsection{Organizzazione del progetto e versionamento}
 
 % struttura directories 
+Il progetto è organizzato in diverse cartelle e sottocartelle per esigenze di modularità e ordine. Di seguito, si illustra la disposizione finale dell'ambiente:
+
+\begin{itemize}
+    \item \texttt{assets}: contiene le descrizioni USD delle varianti del G1.
+    \item \texttt{checkpoints}: a sua volta racchiude \texttt{logs} e \texttt{model} in cui vengono salvate rispettivamente i log di simulazione e il modello finale derivante dall'addestramento.
+    \item \texttt{configs}: racchiude i file di configurazione dell'agente, dell'ambiente e della politica, utilizzati per personalizzare l'addestramento.
+    \item \texttt{managers}: raccoglie tutti i manager per la struttura ManagerBased (action, command, curriculum, event, observation, reward, termination). Al suo interno è stata creata una cartella per le funzioni MDP personalizzate.
+    \item \texttt{models}: ospita modelli di computer vision utilizzati per contribuire alle osservazioni.
+    \item \texttt{robot}: contiene i file di configurazione del robot e dei suoi attuatori.
+    \item \texttt{scenes}: raccoglie le descrizioni degli scenari di simulazione.
+    \item \texttt{scripts}: ci sono gli script di avvio per l'addestramento e per il test.
+    \item \texttt{sensors}: ospita le descrizioni dei sensori montati sul robot.
+    \item \texttt{task}: contiene la caratterizzazione del task specifico di evitamento ostacoli.
+\end{itemize}
 
 % versionamento GitHub
 
@@ -96,9 +110,7 @@ Il modello URDF del G1 è fornito in più varianti con diversi gradi di libertà
 \end{table}
 
 \subsubsection{Implementazione dei sensori virtuali}
-Accertata la correttezza dei giunti e dei relativi sistemi di riferimento, si è proceduto ad equipaggiare il robot con la sensoristica prevista. Come ampiamente descritto nel paragrafo 1.4.3, il G1 è provvisto di una camera RGB-D Realsense D435i e di un LiDAR Livox Mid-360. La ricerca di modelli URDF da convertire ha prodotto scarsi risultati per entrambi i sensori: del primo esistono poche versioni, mentre del secondo sono reperibili solo quelle compatibili con Gazebo\footnote{piattaforma di simulazione concorrente ad Isaac Sim}. Pur provando tutte le versioni disponibili del D435i, non è stato trovato un modello completamente compatibile e funzionante. 
-
-Dunque, si è deciso di percorrere la strada più accettabile, almeno provvisoriamente, cioè l'adattamento allo scopo di dispositivi simili. Tra gli asset nella libreria di Isaac Sim è emerso il Realsense D455, l'evoluzione del D435i. Segue la tabella \ref{tab:realsense_comparison} che sottolinea le differenze tra le due camere RGB-D.
+Accertata la correttezza dei giunti e dei relativi sistemi di riferimento, si è proceduto ad equipaggiare il robot con la sensoristica prevista. Come ampiamente descritto nel paragrafo 1.4.3, il G1 è provvisto di una camera RGB-D Realsense D435i e di un LiDAR Livox Mid-360. La ricerca di modelli URDF da convertire ha prodotto scarsi risultati per entrambi i sensori: del primo esistono poche versioni, mentre del secondo sono reperibili solo quelle compatibili con Gazebo\footnote{piattaforma di simulazione concorrente ad Isaac Sim}. Pur provando tutte le versioni disponibili del D435i, non è stato trovato un modello completamente compatibile e funzionante. Dunque, si è deciso di percorrere la strada più accettabile, almeno provvisoriamente, cioè l'adattamento allo scopo di dispositivi simili. Tra gli asset nella libreria di Isaac Sim è emerso il Realsense D455, l'evoluzione del D435i. Segue la tabella \ref{tab:realsense_comparison} che sottolinea le differenze tra le due camere RGB-D.
 
 \begin{table}[h]
     \centering
@@ -136,18 +148,133 @@ Le caratteristiche dell'IMU non sono specificate nel datasheet del G1, dunque, s
 
 
 \subsection{Progettazione del Markov Decision Process}
-\subsubsection{Agente}
+\subsubsection{Azioni}
+Nel Markov Decision Process, le azioni corrispondono alle variabili di output del modello e nel progetto sono dedicate al controllo dei dodici giunti delle gambe del robot. Le possibili grandezze manipolabili dall'agente sono: la posizione, la velocità e la forza. Il primo caso rappresenta un controllo ad alto livello che astrae parte della dinamica e si adatta a compiti che prevedono pose statiche e movimenti ben definiti. Il controllo in velocità è più diretto e utilizzato per la definizione di traiettorie nello spazio d'azione, ma richiede una conoscenza approfondita del singolo motore ed ha bisogno di un PID\footnote{controllo proporzionale, integrale e derivativo}. Il controllo in forza è quello più realistico ma il più difficile da attuare, richiede modelli avanzati che riescano a comprendere i legami dinamici ed i vincoli fisici intrinseci ai motori in modo da produrre uscite coerenti. Quest'ultima è l'opzione che è sembrata più aderente alla trattazione, seppur rendesse più complesso il compito.
 
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+         \textbf{Azioni} & \textbf{Dimensioni}\\ \hline
+         Forza ai giunti & (12,1)\\ \hline
+    \end{tabular}
+    \caption{Azioni dell'agente e rispettive dimensioni}
+    \label{tab:act}
+\end{table}
+
+Utilizzare solo i giunti delle gambe ha permesso di ridurre la dimensione del tensore di uscita dalla rete e, dunque, di addestrare una politica che si concentrasse sullo spazio delle azioni che più impatta sulla locomozione. Controllare tutti i gradi di libertà del G1 avrebbe reso la trattazione più realistica poiché la locomozione, tanto quella umana quanto quella robotica, coinvolge anche le rotazioni del busto ed il movimento delle braccia per aumentare la fluidità e la stabilità. Questo, però, avrebbe reso l'addestramento più lungo e dispendioso, senza garanzia di una maggiore efficacia.
+
+% completare magari con riferimenti scientifici
+
+%tabella delle azioni
+
+
+\subsubsection{Osservazioni}
+Le osservazioni compongono una larga parte degli ingressi della rete e servono a creare un modello dell'ambiente con cui l'agente interagisce. Non corrispondono alle sole misurazioni dei sensori, ma anche alla modellazione del compito assegnato che, nel caso specifico, è la posizione dell'obiettivo nello spazio.
+
+% completare 
+
+%aggiornare
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+    \textbf{Osservazioni} & \textbf{Dimensioni} \\ \hline
+    Posizione dei giunti & (12, 1) \\ \hline
+    Velocità dei giunti & (12, 1) \\ \hline
+    Velocità IMU & (3, 1) \\ \hline
+    Accelerazione IMU & (3, 1) \\ \hline
+    Immagine RGB & (192, 108, 3) \\ \hline
+    Immagine Depth & (192, 108, 1) \\ \hline
+    Lidar & (6144, 1) \\ \hline
+    Target & (4, 1) \\ \hline
+    \end{tabular}
+    \caption{Osservazioni e rispettive dimensioni}
+    \label{tab:obs}
+\end{table}
+
+% feature extraction 
 
 \subsubsection{Ricompense}
+Le ricompense, nel Markov Decision Process, rappresentano il feedback dell'ambiente rispetto alle azioni dell'agente. La loro modellazione risulta un compito complesso perché richiede la valutazione accurata dell'impatto di ciascuna sull'apprendimento della politica ottimale. Le ricompense risultano, di fatto, degli iperparametri il cui tuning richiede tempo e addestramenti. 
+
+% riferimento a stato dell'arte
+
+% aggiornare
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+    \textbf{Ricompense} & \textbf{Peso} \\ \hline
+    Vivo & [DA IMPL] \\ \hline
+    In piedi & [DA IMPL] \\ \hline
+    Caduto & [DA IMPL] \\ \hline
+    Cammina & [DA IMPL] \\ \hline
+    Uscita dallo spazio operativo & [DA IMPL] \\ \hline
+    Collisione con un ostacolo & [DA IMPL] \\ \hline
+    Avvicinamento all'obiettivo (soft) & $1-\tanh$ \\ \hline
+    Avvicinamento all'obiettivo (hard) & proporzionale \\ \hline
+    Obiettivo raggiunto & [DA IMPL] \\ \hline
+    \end{tabular}
+    \caption{Ricompense e rispettivi pesi}
+    \label{tab:rew}
+\end{table}
 
 
-\subsubsection{Parametri}
+\subsubsection{Eventi}
+% eventi
+
+% aggiornare
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+    \textbf{Eventi} & \textbf{Modalità} \\ \hline
+    Uscita dallo spazio operativo & reset \\ \hline
+    Collisione con un ostacolo & reset \\ \hline
+    Caduta del robot & reset \\ \hline
+    Obiettivo raggiunto & reset \\ \hline
+    \end{tabular}
+    \caption{Eventi e rispettive modalità di gestione}
+    \label{tab:ev}
+\end{table}
+
+
+\subsubsection{Terminazioni}
+% terminazioni
+
+% aggiornamento
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+    \textbf{Terminazioni}\\\hline
+    Fine del tempo\\ \hline
+    Caduta del robot\\ \hline
+    Uscita dallo spazio operativo\\ \hline
+    Collisione con un ostacolo\\ \hline
+    Obiettivo raggiunto\\ \hline
+    \end{tabular}
+    \caption{Terminazione degli episodi}
+    \label{tab:term}
+\end{table}
 
 
 \subsection{Scrittura del codice}
 
 
-\subsection{Esecuzione del training}
+\subsection{Esecuzione dell'addestramento}
+\subsubsection{Pianificazione}
+Per permettere uno sviluppo modulare e un corretto debug, si è pianificata una roadmap di addestramenti per di complessità incrementale. La difficoltà crescente
 
 
+\subsubsection{Tuning degli iperparametri}
+
+
+\subsubsection{Impostazioni}
+La parametrizzazione rimanente non è rivolta al miglioramento delle prestazioni del modello, ma alla leggibilità dei risultati e all'ottimizzazione delle risorse per l'addestramento. 
+
+% video 
+
+% numero di ambienti 
+
+% etc

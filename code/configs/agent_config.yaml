@@ -1,17 +1,29 @@
 # Configurazione SAC
 policy: "MultiInputPolicy"
-learning_rate: "constant_0.0003"
-n_timesteps: 2000000 # numero totale di timesteps per l'addestramento
-batch_size: 512         
-buffer_size: 10_000         
-learning_starts: 10000  # quando iniziare apprendere la policy       
-train_freq: 1               
-gradient_steps: 1           
-action_noise: null          
-ent_coef: "auto"           
+ent_coef: "auto" 
 target_update_interval: 1   
 target_entropy: "auto"      
 gamma: 0.99                
 tau: 0.005                 
 seed: 42                   
-device: "auto"       
+device: "auto" 
+action_noise: null    
+
+# Configurazione addestramento
+learning_rate: "constant_0.0003"
+learning_starts: 10000  # quando iniziare apprendere la policy   
+n_timesteps: 2000000 # numero totale di timesteps per l'addestramento
+train_freq: 1               
+gradient_steps: 1  
+
+# Normalizzazioni
+normalize_input: True
+normalize_input: False
+batch_size: 512         
+buffer_size: 10_000
+clip_obs: 10.0         
+    
+        
+      
+          
+      

@@ -38,9 +38,9 @@ class TerminationsCfg:
         },
     )'''
 
-    '''# raggiunge l'obiettivo
+    # raggiunge l'obiettivo
     reach_goal = DoneTerm(
-        func=mdp_custom.goal_reached
-    )'''
+        func=mdp_custom.target_reached
+    )
 
     

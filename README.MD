@@ -7,7 +7,6 @@ Il progetto è organizzato in diverse cartelle per esigenze di modularità e chi
 - **_assets_**: contiene le descrizioni USD delle varianti del G1.
 - **_checkpoints_**: a sua volta racchiude _logs_ e _model_ in cui vengono salvate rispettivamente i log di simulazione e il modello finale derivante dall'addestramento. Questa cartella non è presente nella repository per motivi di spazio.
 - **_configs_**: racchiude i file di configurazione dell'agente e della politica, utilizzati per presonalizzare l'addestramento.
-- **_envs_**: 
 - **_managers_**: raccoglie tutti i manager per la struttura ManagerBased (action, command, curriculum, event, observation,reward,termination).
 - **_models_**: ospita modelli di computer vision utilizzati per contribuire alle osservazioni.
 - **_robot_**: contiene i file di configurazione del robot e dei suoi attuatori.

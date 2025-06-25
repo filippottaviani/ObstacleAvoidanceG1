@@ -65,7 +65,7 @@ class ObservationsCfg:
                 "data_type": "depth"
             }
         )
-    
+
         # LiDAR point cloud
         lidar_points = ObsTerm(
             func=mdp_custom.lidar_pc,

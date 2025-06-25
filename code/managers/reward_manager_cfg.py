@@ -9,13 +9,13 @@ import torch
 @configclass
 class RewardsCfg:
 
-    # Vivo
+    '''# Vivo
     alive = RewardTermCfg(
         func=mdp.is_alive,
         weight=0.1
-    )
+    )'''
 
-    # In piedi
+    '''# In piedi
     standing = RewardTermCfg(
         func="isaaclab.envs.mdp.rewards:joint_pos_limits",
         params={
@@ -25,7 +25,7 @@ class RewardsCfg:
             )
         },
         weight=0.1
-    )
+    )'''
     
     # Caduto
     fallen = RewardTermCfg(
@@ -80,24 +80,21 @@ class RewardsCfg:
         weight=1.0
     )
 
-    # Si avvicina all'obiettivo (penalità pesante positiva)
+    # Si avvicina all'obiettivo (penalità negativa proporzionale)
     position_tracking_hard = RewardTermCfg(
-        func=mdp_custom.heading_error_abs,
+        func=mdp_custom.position_error,
         params={
             "command_name": "target"
         },
-        weight=1.0,
+        weight=-1.0,
     )
 
-    '''
-    # Raggiunge l'obiettivo
+    # Obiettivo raggiunto
     reach_goal = RewardTermCfg(
-        func="isaaclab.envs.mdp.rewards:goal_reached",
-        params={
-            "asset_cfg": SceneEntityCfg(name="robot"),
-            "target_cfg": SceneEntityCfg(name="goal"),
-            "threshold": 0.3,
+        func=mdp_custom.target_reached,
+        params={ 
+            "command_name": "target",
+            "threshold": 0.3
         },
-        weight=100.0
+        weight=10.0
     )
-    '''

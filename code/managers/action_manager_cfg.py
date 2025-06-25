@@ -5,7 +5,8 @@ from isaaclab.envs.mdp import JointEffortActionCfg
 class ActionsCfg:
 
     joint_efforts = JointEffortActionCfg(
-        asset_name="robot", joint_names=[
+        asset_name="robot", 
+        joint_names=[
             "left_hip_pitch_joint",
             "left_hip_roll_joint",
             "left_hip_yaw_joint",
@@ -18,5 +19,6 @@ class ActionsCfg:
             "right_knee_joint",
             "right_ankle_pitch_joint",
             "right_ankle_roll_joint"
-        ]
+        ],
+        scale= 1.0
     )
