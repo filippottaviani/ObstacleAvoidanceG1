@@ -8,7 +8,7 @@ configuration : RayCasterCfg = RayCasterCfg(
         attach_yaw_only=False,
         pattern_cfg=patterns.LidarPatternCfg(
             channels=40,
-            vertical_fov_range=[0.0, -57.0], 
+            vertical_fov_range=[7.0, -52.0], 
             horizontal_fov_range=[-180.0, 180.0], 
             horizontal_res=0.15
         )

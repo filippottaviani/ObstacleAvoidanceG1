@@ -1,9 +1,7 @@
 from isaaclab.managers import RewardTermCfg, SceneEntityCfg
 from isaaclab.utils import configclass
 from isaaclab.envs import mdp
-#import isaaclab_tasks.manager_based.navigation.mdp as mdp_nav
-from managers.mdp import mdp_custom
-import torch
+from managers.mdp import mdp_rew_custom as mdp_custom
 
 
 @configclass
@@ -58,7 +56,7 @@ class RewardsCfg:
         weight=-1.0
     )
 
-    # Colpisce un ostacolo
+    '''# Colpisce un ostacolo
     hit_obstacle = RewardTermCfg(
         func=mdp.undesired_contacts,
         params={
@@ -68,7 +66,7 @@ class RewardsCfg:
             ),
         },
         weight=-0.5,
-    )
+    )'''
 
     # Si avvicina all'obiettivo (penalità leggera)
     position_tracking_soft = RewardTermCfg(

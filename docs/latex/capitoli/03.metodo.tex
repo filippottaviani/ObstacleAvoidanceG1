@@ -57,7 +57,7 @@ Per trasporre le politiche elaborate durante le simulazioni nell'ambito reale ci
 Il progetto è organizzato in diverse cartelle e sottocartelle per esigenze di modularità e ordine. Di seguito, si illustra la disposizione finale dell'ambiente:
 
 \begin{itemize}
-    \item \texttt{assets}: contiene le descrizioni USD delle varianti del G1.
+    \item \texttt{assets}: contiene le descrizioni USD ed URDF delle varianti del G1.
     \item \texttt{checkpoints}: a sua volta racchiude \texttt{logs} e \texttt{model} in cui vengono salvate rispettivamente i log di simulazione e il modello finale derivante dall'addestramento.
     \item \texttt{configs}: racchiude i file di configurazione dell'agente, dell'ambiente e della politica, utilizzati per personalizzare l'addestramento.
     \item \texttt{managers}: raccoglie tutti i manager per la struttura ManagerBased (action, command, curriculum, event, observation, reward, termination). Al suo interno è stata creata una cartella per le funzioni MDP personalizzate.
@@ -67,13 +67,14 @@ Il progetto è organizzato in diverse cartelle e sottocartelle per esigenze di m
     \item \texttt{scripts}: ci sono gli script di avvio per l'addestramento e per il test.
     \item \texttt{sensors}: ospita le descrizioni dei sensori montati sul robot.
     \item \texttt{task}: contiene la caratterizzazione del task specifico di evitamento ostacoli.
+    \item \texttt{utils}: racchiude file di secondaria importanza come lo script per verificare l'occupazione in memoria del buffer di addestramento.
 \end{itemize}
 
 % versionamento GitHub
+Il progetto è stato realizzato principalmente negli uffici di Eagleprojects con la postazione descritta sopra, ma si è reso necessario intervenire sul codice anche in orari non compatibili con quelli d'ufficio e, di conseguenza, da dispositivi differenti. Inoltre, nel tempo, è stato necessario produrre più versioni dello stesso progetto, tenere traccia dei progressi e delle modifiche nel tempo. Questo ha portato all'implementazione di soluzioni di versionamento Git che garantissero anche possibilità di backup, scalabilità e riproducibilità del progetto. La creazione di una repository GitHub ha permesso di lavorare ad evoluzioni strutturali del codice conservando una versione sempre funzionante e valutando l'impatto di ciascuna modifica. Attualmente il livello di accesso al progetto è privato per dare priorità all'azienda che ne ha permesso lo sviluppo.
 
 
 \subsection{Importazione del robot}
-
 \subsubsection{Importazione URDF}
 Come descritto in precedenza, Isaac Sim sfrutta il formato standardizzato di descrizione per le scene USD, ma la stragrande maggioranza degli asset robotici open source è nel formato URDF. Il software offre un convertitore tra i due formati che permette di importare nello spazio di lavoro molte delle risorse reperibili online. In prima istanza si è scelto di utilizzare la versione dell'umanoide G1 inclusa nelle librerie native di Isaac Sim, ma, già da un primo sguardo, è balzato all'occhio che il modello proposto avesse una sorta di "maschera" nella cavità inferiore della testa (visibile in Figura \ref{fig:confronto_g1}) che occludeva gran parte dello spazio di visione del LiDAR. Ritenendo questo impedimento non accettabile, si è preferito importare una versione diversa del robot trovata in una repository GitHub dedicata ai prodotti Unitree. 
 
@@ -84,7 +85,7 @@ Come descritto in precedenza, Isaac Sim sfrutta il formato standardizzato di des
     \label{fig:confronto_g1}
 \end{figure}
 
-Il modello URDF del G1 è fornito in più varianti con diversi gradi di libertà, con o senza mani. La scelta è ricaduta sulla versione con dodici gradi di libertà corrispondenti alle articolazioni delle due gambe: due per ogni lato del bacino, una per ogni ginocchio e due per ciascuna caviglia. Selezionare un modello con le sole articolazioni dedicate alla locomozione ha permesso di evitare di introdurre variabili non utilizzate. Per completezza, nella tabella \ref{tab:g1_joint_link} si riporta la totalità di sistemi di riferimento e giunti presenti nel G1 ottenuto.
+Il modello URDF del G1 è fornito in più varianti con diversi gradi di libertà, con o senza mani. La scelta è ricaduta sulla versione con dodici gradi di libertà corrispondenti alle articolazioni delle due gambe: due per ogni lato del bacino, una per ogni ginocchio e due per ciascuna caviglia. Selezionare un modello con le sole articolazioni dedicate alla locomozione ha permesso di evitare di introdurre variabili non utilizzate. Per completezza, nella tabella \ref{tab:g1_joint_link} si riporta la totalità dei sistemi di riferimento e dei giunti presenti nel G1 ottenuto.
 
 \begin{table}[h]
     \centering
@@ -123,7 +124,7 @@ Accertata la correttezza dei giunti e dei relativi sistemi di riferimento, si è
     \hline
     Tecnologia Sensore RGB                   & Rolling Shutter               & Global Shutter               \\ \hline
     Risoluzione RGB                          & 1920x1080                     & 1280x800                     \\  \hline
-    FOV RGB (H x V)                          & 69° x 42°                     & 86° x 57° (o 90° x 65°)      \\   \hline
+    FOV RGB (H x V)                          & 69° x 42°                     & 86° x 57°      \\   \hline
     Dimensioni                               & 90 mm x 25 mm x 25 mm         & 124 mm x 26 mm x 29 mm       \\ \hline
     \end{tabular}
     \caption{Confronto tra Intel RealSense D435i e D455}
@@ -163,9 +164,9 @@ Nel Markov Decision Process, le azioni corrispondono alle variabili di output de
 
 Utilizzare solo i giunti delle gambe ha permesso di ridurre la dimensione del tensore di uscita dalla rete e, dunque, di addestrare una politica che si concentrasse sullo spazio delle azioni che più impatta sulla locomozione. Controllare tutti i gradi di libertà del G1 avrebbe reso la trattazione più realistica poiché la locomozione, tanto quella umana quanto quella robotica, coinvolge anche le rotazioni del busto ed il movimento delle braccia per aumentare la fluidità e la stabilità. Questo, però, avrebbe reso l'addestramento più lungo e dispendioso, senza garanzia di una maggiore efficacia.
 
-% completare magari con riferimenti scientifici
 
-%tabella delle azioni
+
+% completare magari con riferimenti scientifici
 
 
 \subsubsection{Osservazioni}
@@ -183,8 +184,8 @@ Le osservazioni compongono una larga parte degli ingressi della rete e servono a
     Velocità dei giunti & (12, 1) \\ \hline
     Velocità IMU & (3, 1) \\ \hline
     Accelerazione IMU & (3, 1) \\ \hline
-    Immagine RGB & (192, 108, 3) \\ \hline
-    Immagine Depth & (192, 108, 1) \\ \hline
+    Immagine RGB & (192, 108, 3) [down 10x] \\ \hline
+    Immagine Depth & (128, 72, 1) [down 10x]\\ \hline
     Lidar & (6144, 1) \\ \hline
     Target & (4, 1) \\ \hline
     \end{tabular}
@@ -192,10 +193,22 @@ Le osservazioni compongono una larga parte degli ingressi della rete e servono a
     \label{tab:obs}
 \end{table}
 
+Le dimensioni degli ingressi RGB-D e LiDAR hanno, da subito, posto il problema della proporzione del tensore di osservazione e del buffer di addestramento. Il robot esplora l’ambiente e ad ogni passo la transizione di stato viene aggiunta al buffer da cui successivamente il modello preleva dei \textit{mini-batch}, sottoinsiemi di dati da elaborare in parallelo, per aggiornare le reti Actor e Critic. L'ideale è avere un buffer molto grande che ospiti molte esperienze di transizione in modo da aumentarne la varianza e, di conseguenza, la capacità di generalizzazione. A parità di buffer, utilizzare osservazioni con molti elementi riduce il numero di esperienze archiviabili diminuendo l'efficienza del buffering. La relazione che caratterizza la memoria richiesta per implementarlo è la seguente:
+
+\begin{equation}
+    \text{memory required} = \text{buffer size} \cdot \text{num envs}\cdot \text{obs dim} \cdot 4
+\end{equation}
+
+dove $\text{num envs}$ rappresenta il numero di ambienti simulati simultaneamente, e $\text{obs dim}$ il numero di elementi del tensore che comprende tutte le osservazioni. Utilizzando la camera RGB-D ed il LiDAR a piena risoluzione, un buffer size di un milione di elementi\footnote{valore abbastanza diffuso in letteratura} e 32 ambienti si ottengono circa $1,9\cdot 10^{14}$ elementi e una richiesta di memoria pari a quasi 700 TB\footnote{terabyte, pari a 1024 GB} di VRAM. Il valore è ampiamente fuori scala e si è reso necessario un intervento di cesura netta della dimensionalità. I primi accorgimenti adottati sono: un downscaling delle dimensioni delle immagini RGB-D di un fattore 10, una riduzione delle dimensioni del buffer di un fattore 100 ed un numero minore di ambienti hanno permesso di riportare le richieste di memoria entro l'ordine dei GB. Questa soluzione, però, sacrifica fortemente sia la qualità della sensoristica che la potenzialità del buffer che ne è uscito pesantemente ridimensionato.
+
+La soluzione migliore per sfruttare i sensori senza pagare la loro elevata dimensionalità intrinseca è estrarre le feature dai dati grezzi e fornirle alla rete come vettori di osservazione. 
 % feature extraction 
 
+% corruption??
+
+
 \subsubsection{Ricompense}
-Le ricompense, nel Markov Decision Process, rappresentano il feedback dell'ambiente rispetto alle azioni dell'agente. La loro modellazione risulta un compito complesso perché richiede la valutazione accurata dell'impatto di ciascuna sull'apprendimento della politica ottimale. Le ricompense risultano, di fatto, degli iperparametri il cui tuning richiede tempo e addestramenti. 
+Le ricompense, nel Markov Decision Process, rappresentano il feedback dell'ambiente rispetto alle azioni dell'agente. La loro modellazione, detta \textit{reward shaping}, risulta un compito complesso perché richiede la valutazione accurata dell'impatto di ciascuna sull'apprendimento della politica ottimale. Le ricompense risultano, di fatto, degli iperparametri; il loro tuning richiede tempo e addestramenti poiché non esistono soluzioni universali o predefinite per il compito specifico. 
 
 % riferimento a stato dell'arte
 
@@ -214,25 +227,36 @@ Le ricompense, nel Markov Decision Process, rappresentano il feedback dell'ambie
     Avvicinamento all'obiettivo (soft) & $1-\tanh$ \\ \hline
     Avvicinamento all'obiettivo (hard) & proporzionale \\ \hline
     Obiettivo raggiunto & [DA IMPL] \\ \hline
+    ...& ...\\ \hline
     \end{tabular}
     \caption{Ricompense e rispettivi pesi}
     \label{tab:rew}
 \end{table}
 
+Il compito è concettualmente semplice, perché richiede soltanto di raggiungere una posizione desiderata e evitare di colpire gli ostacoli. L'intuito suggerirebbe di assegnare una ricompensa positiva se il robot completa il percorso e una negativa se, invece, sceglie una traiettoria che porta ad una collisione. L'addestramento ha, però, bisogno di essere guidato da ricompense e penalità intermedie che assecondano l'agente a compiere azioni virtuose che possono essere conservative o esplorative.  
+
+
+% spiegazione di ciascuna ricompensa e motivazioni riguardo al peso 
+
 
 \subsubsection{Eventi}
-% eventi
+Il manager degli eventi gestisce le modifiche da apportare all'ambiente e alle sue componenti in risposta al verificarsi di specifiche condizioni. Gli eventi possono essere usati per reinizializzare la scena al termine di un episodio, ma anche per intervenire sull'ambiente per introdurre incertezze che l'agente deve saggiare e includere nelle proprie esperienze. Le documentazioni \cite{nvidiaIsaacLab2025} suggeriscono di applicare forze di disturbo al robot con intervalli periodici o di variare le caratteristiche del terreno durante l'episodio. Le modalità di applicazione degli episodi sono le seguenti:
+
+\begin{itemize}
+    \item \textit{prestartup}: l'evento viene applicato prima dell'inizio della simulazione.
+    \item \textit{startup}: l'evento viene applicato all'inizio dell'addestramento appena avviata la simulazione.
+    \item \textit{reset}: l'evento viene applicato ad ogni reset dell'ambiente
+    \item \textit{interval}: l'evento viene applicato ad intervalli di tempo predefiniti.
+\end{itemize}
 
 % aggiornare
-\begin{table}[h]
+\begin{table}[h!]
     \centering
     \begin{tabular}{|c|c|}
     \hline
     \textbf{Eventi} & \textbf{Modalità} \\ \hline
-    Uscita dallo spazio operativo & reset \\ \hline
-    Collisione con un ostacolo & reset \\ \hline
-    Caduta del robot & reset \\ \hline
-    Obiettivo raggiunto & reset \\ \hline
+    Riposizionamento del robot & reset \\ \hline
+    ... & reset \\ \hline
     \end{tabular}
     \caption{Eventi e rispettive modalità di gestione}
     \label{tab:ev}
@@ -240,9 +264,16 @@ Le ricompense, nel Markov Decision Process, rappresentano il feedback dell'ambie
 
 
 \subsubsection{Terminazioni}
-% terminazioni
+Le terminazioni consistono in politiche di gestione dei segnali di terminazione, detti \textit{dones}, vettori $n$-dimensionali di booleani, dove $n$ è il numero di ambienti in esecuzione. Esistono due tipi di terminazioni:
 
-% aggiornamento
+\begin{itemize}
+    \item \textit{Time-out}: segnala la fine dell'episodio. Viene utilizzato per avere più episodi differenti possibili ed evitare che l'agente insegua a lungo termine ricompense legate alla sopravvivenza o al raggiungimento di minimi locali dove sostare.
+    \item \textit{Terminated}: segnale impostato a \texttt{True} quando l'ambiente raggiunge uno stato terminale come la risoluzione del compito oppure uno stato irreversibile come la caduta del robot.
+\end{itemize}
+
+Nel caso in esame, oltre il time-out, la caduta ed il raggiungimento dell'obiettivo, si è posta attenzione sull'uscita dallo spazio operativo e la collisione con gli ostacoli. Nel primo caso la terminazione evita che l'episodio si protragga fino al time-out in situazioni in cui il robot potrebbe collidere con altri robot o con ostacoli di altri ambienti. 
+
+% aggiornare
 \begin{table}[h]
     \centering
     \begin{tabular}{|c|c|}
@@ -253,6 +284,7 @@ Le ricompense, nel Markov Decision Process, rappresentano il feedback dell'ambie
     Uscita dallo spazio operativo\\ \hline
     Collisione con un ostacolo\\ \hline
     Obiettivo raggiunto\\ \hline
+    ...\\ \hline
     \end{tabular}
     \caption{Terminazione degli episodi}
     \label{tab:term}
@@ -260,6 +292,26 @@ Le ricompense, nel Markov Decision Process, rappresentano il feedback dell'ambie
 
 
 \subsection{Scrittura del codice}
+\subsubsection{Configurazione dell'ambiente e dell'agente}
+
+
+\subsubsection{Caratterizzazione dei sensori e del robot}
+
+
+\subsubsection{Assemblaggio delle scene}
+
+
+\subsubsection{Definizione dei manager}
+
+
+\subsubsection{Script di training e test}
+
+
+\subsubsection{Modelli di feature extraction}
+
+
+\subsubsection{Altro}
+
 
 
 \subsection{Esecuzione dell'addestramento}

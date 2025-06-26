@@ -2,17 +2,17 @@
 
 \subsection{Pianificazione locale}
 \subsubsection{Superamento degli ostacoli}
-Il percorso verso un obiettivo in una mappa nota viene pianificato con un algoritmo di pianificazione globale, che fornisce al robot la traiettoria dalla posa iniziale a quella desiderata. Si basa sulla conoscenza dell'intera mappa e della posizione degli ostacoli al momento della pianificazione. In fase di esecuzione, gli scenari reali possono presentare entità sconosciute o dinamiche che rappresentano le discrepanze tra modello e realtà. La maggior parte di questi problemi può essere affrontata utilizzando un pianificatore locale, un sistema che reagisce alla rilevazione di ostacoli imprevisti e riprogramma localmente la traiettoria. Le principali caratteristiche richieste per algoritmi di questo tipo sono rivolte a: 
+Nella robotica mobile, spesso si ha l'esigenza di assegnare ad un sistema una posa da raggiungere in una mappa nota senza doverlo controllare in ogni movimento. Si tratta di un compito ad alto livello che va tradotto in comandi di basso livello come le tensioni da assegnare ai motori ad ogni istante fino al raggiungimento dell'obiettivo. Una parte consistente di questa attività è affrontata dall'algoritmo di pianificazione globale che sintetizza la traiettoria dalla posa iniziale a quella desiderata. Si basa sulla conoscenza dell'intera mappa e della posizione degli ostacoli al momento della pianificazione. In fase di esecuzione, gli scenari reali possono presentare entità sconosciute o dinamiche che rappresentano le discrepanze tra modello e realtà. La maggior parte di questi problemi può essere affrontata utilizzando un pianificatore locale, un sistema che reagisce alla rilevazione di ostacoli imprevisti e riprogramma localmente la traiettoria. I due algoritmi non si escludono, anzi, operano in maniera complementare. Gli algoritmi di tipo locale devono tenere conto e trovare un bilanciamento accettabile tra i seguenti aspetti: 
 \begin{itemize}
-    \item l'obiettivo generale.
-    \item la velocità e la cinematica effettive del robot.
-    \item i sensori di bordo.
-    \item il rischio di collisione attuale e futuro.
+    \item dirigersi verso l'obiettivo generale.
+    \item rispettare la velocità e la cinematica effettive del robot.
+    \item monitorare i dati forniti dai sensori di bordo.
+    \item valutare il rischio di collisione attuale e futuro.
 \end{itemize}
 Si riportano di seguito, tre famiglie di approcci di pianificazione locale proposti come esempi da testi di riferimento del settore, nello specifico da "Introduction to Autonomous Mobile Robots" di R. Siegwart, I. R. Nourbakhsh e D. Scaramuzza \cite{siegwart2011introduction}.
 
 \subsubsection{Algoritmi BUG}
-BUG è una famiglia di approcci molto semplici per l'evitamento degli ostacoli, che consiste sostanzialmente nell'aggirarli per poi riprendere il percorso verso l'obiettivo. Ci concentriamo sulle tre versioni e sulle relative procedure:
+BUG è una famiglia di approcci molto semplici per l'evitamento degli ostacoli, che consiste sostanzialmente nell'aggirarli per poi riprendere il percorso verso l'obiettivo. Si riportano le tre versioni e le relative procedure in ordine di complessità crescente:
 \begin{itemize}
     \item BUG 0: ci si dirige verso l'obiettivo, si evitano gli ostacoli seguendone il perimetro finché non si riesce a riprendere il percorso verso l'obiettivo. Tra gli algoritmi è il più veloce e facile da implementare ma il meno affidabile, può rimanere bloccato in presenza di ostacoli complessi.
     \item BUG 1: ci si dirige verso l'obiettivo, se si incontra un ostacolo, lo si circumnaviga completamente fino a tornare al punto dove è avvenuta la collisione memorizzando per ogni punto la vicinanza alla meta e si torna al più vicino per riprendere il percorso. Garantisce di trovare il percorso ma risulta inefficiente e non ottimale.
@@ -28,9 +28,13 @@ BUG è una famiglia di approcci molto semplici per l'evitamento degli ostacoli, 
 
 
 \subsubsection{Dynamic Window Approach}
-La pianificazione locale dovrebbe tenere conto, oltre ai dati relativi ai percorsi e agli ostacoli, di altri elementi, quali, ad esempio, i vincoli sulle traiettorie e sulle velocità locali. Il Dynamic Window Approach (DWA) è un algoritmo di evitamento ostacoli in tempo reale, particolarmente usato nei sistemi di navigazione autonoma. A differenza degli algoritmi BUG, che usano strategie reattive semplici, DWA utilizza un'ottimizzazione basata su finestre di velocità per determinare la traiettoria sicura e più efficiente. La finestra dinamica limita le velocità ammissibili tenendo conto delle accelerazioni massime. La funzione obiettivo ha la forma:
-\[J=\alpha \text{ heading}(v,\omega)+ \beta \text{ velocity}(v,\omega)+ \gamma \text{ distance}(v,\omega)\]
-dove $heading$ denota un termine che cerca di mantenere la direzione verso l'obiettivo e il percorso globale, $velocity$ un termine che si muove il più velocemente possibile e $distance$ costringe a stare lontano dagli ostacoli. La procedura di base dell'algoritmo DWA è la seguente:
+Come anticipato in precedenza, la pianificazione locale dovrebbe tenere conto, oltre ai dati relativi ai percorsi e agli ostacoli, di altri elementi, quali, ad esempio, i vincoli sulle traiettorie e sulle velocità locali. Il Dynamic Window Approach (DWA) è un algoritmo di evitamento ostacoli in tempo reale, particolarmente usato nei sistemi di navigazione autonoma e include la valutazione di questi vincoli. A differenza degli algoritmi BUG, che usano strategie reattive semplici, DWA utilizza un'ottimizzazione basata su finestre di velocità per determinare la traiettoria più sicura ed efficiente. La finestra dinamica limita le velocità ammissibili tenendo conto delle accelerazioni massime. La funzione obiettivo ha la seguente forma:
+
+\begin{equation}
+    J=\alpha \text{ heading}(v,\omega)+ \beta \text{ velocity}(v,\omega)+ \gamma \text{ distance}(v,\omega)    
+\end{equation}
+
+dove $heading$ denota un termine che cerca di mantenere la direzione verso l'obiettivo e il percorso globale, $velocity$ un termine che si muove il più velocemente possibile e $distance$ uno che impone la distanza dagli ostacoli. La procedura di base dell'algoritmo DWA è la seguente:
 \begin{enumerate}
     \item Campionamento discreto dello spazio di controllo del robot $(v,\omega)$.
     \item Per ogni coppia di velocità campionata $(v,\omega)$, si esegue una simulazione in avanti dallo stato attuale del robot per prevedere cosa accadrebbe se la velocità campionata venisse applicata per un certo periodo di tempo (il cosiddetto orizzonte di pianificazione).
@@ -41,11 +45,11 @@ dove $heading$ denota un termine che cerca di mantenere la direzione verso l'obi
 Dynamic Window Approach è più reattivo rispetto agli ostacoli in movimento e più fluido rispetto agli algoritmi BUG grazie all'ottimizzazione della traiettoria nel breve periodo. Questo, però, comporta un maggior costo computazionale ed il tuning dei parametri $\alpha$, $\beta$ e $\gamma$.
 
 \subsubsection{Timed Elastic Band} 
-Il Timed Elastic Band (TEB) è un algoritmo avanzato di pianificazione locale basata su grafo del movimento per robot mobili. Si basa su un modello elastico per ottimizzare la traiettoria del robot, tenendo conto di collisioni, dinamica e tempo. Le caratteristiche di base di TEB sono le seguenti:
+L'ultimo algoritmo di pianificazione locale in esame è Timed Elastic Band (TEB), un algoritmo avanzato di pianificazione locale basata su grafo del movimento per robot mobili. Si basa su un modello elastico per ottimizzare la traiettoria del robot, tenendo conto di collisioni, dinamica e tempo. Le caratteristiche di base di TEB sono le seguenti:
 \begin{itemize}
     \item Ottimizza localmente la traiettoria del robot e i tempi invece di selezionare le velocità migliori come DWA.
     \item La traiettoria iniziale generata da un pianificatore globale viene ottimizzata durante l'esecuzione, minimizzando il tempo richiesto per la traiettoria (obiettivo ottimale in termini di tempo), la separazione dagli ostacoli e il rispetto dei vincoli cinematici e dinamici come le velocità e delle accelerazioni massime.
-    \item Il controllo predittivo basato su modello integra la pianificazione della traiettoria ottimale con il feedback di stato nel circuito di controllo
+    \item Il controllo predittivo basato su modello integra la pianificazione della traiettoria ottimale con il feedback di stato nel feedback di controllo.
     \item L'approccio TEB formula il problema del controllo ottimo dell'orizzonte fisso per le transizioni punto-punto come un programma non lineare, scritto come un ipergrafo:
     \[f(B)=\sum_k\gamma_kf_k(B),\;\;\;B^*=arg \min_Bf(B)\]
     $f(B)$ è la funzione di costo totale che valuta ogni possibile comando di velocità $B=(v,\omega)$, Ogni $f_k(B)$ rappresenta un criterio di valutazione; ad esempio, distanza dall'obiettivo $f_{heading}$, distanza dagli ostacoli $f_{clearance}$, velocità preferita $f_{velocity}$. I pesi $\gamma_k$ bilanciano l'importanza di ogni criterio.

@@ -3,7 +3,7 @@ from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 import isaaclab.envs.mdp.observations as obs
-import managers.mdp.mdp_custom as mdp_custom
+import managers.mdp.mdp_obs_custom as mdp_custom
 
 
 @configclass
@@ -11,7 +11,7 @@ class ObservationsCfg:
     
     @configclass
     class PolicyCfg(ObsGroup):
-        # observation terms (order preserved)
+        # Letture encoder
         joint_pos_rel = ObsTerm(func=obs.joint_pos_rel)
         joint_vel_rel = ObsTerm(func=obs.joint_vel_rel)
 
@@ -49,7 +49,7 @@ class ObservationsCfg:
             func= obs.image,
             params={
                 "sensor_cfg":  SceneEntityCfg(
-                    name= "rgbd_camera"
+                    name= "rgb_camera"
                 ),
                 "data_type": "rgb"
             }
@@ -60,7 +60,7 @@ class ObservationsCfg:
             func= obs.image,
             params={
                 "sensor_cfg":  SceneEntityCfg(
-                    name= "rgbd_camera"
+                    name= "depth_camera"
                 ),
                 "data_type": "depth"
             }

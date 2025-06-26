@@ -16,11 +16,12 @@ class BasicScenarioCfg(InteractiveSceneCfg):
     robot = g1_cfg.configuration
 
     # sensori
-    rgbd_camera = rgbd_cfg.configuration
+    rgb_camera = rgbd_cfg.configuration_rgb
+    depth_camera = rgbd_cfg.configuration_depth
     lidar = lidar_cfg.configuration
     imu = imu_cfg.configuration
-    cont_sensor_LH = contact_cfg.configuration_LH
-    cont_sensor_RH = contact_cfg.configuration_RH
+    #cont_sensor_LH = contact_cfg.configuration_LH
+    #cont_sensor_RH = contact_cfg.configuration_RH
 
     # ground plane
     ground = AssetBaseCfg(
@@ -38,7 +39,7 @@ class BasicScenarioCfg(InteractiveSceneCfg):
     )
 
     # ostacoli
-    '''obstacle = AssetBaseCfg(
+    obstacle = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Obstacle1",
         spawn= sim_utils.CylinderCfg(
             radius=0.2,
@@ -56,4 +57,4 @@ class BasicScenarioCfg(InteractiveSceneCfg):
         init_state=AssetBaseCfg.InitialStateCfg(
             pos=(2.0, 0.0, 1.0),
         )
-    )'''
+    )

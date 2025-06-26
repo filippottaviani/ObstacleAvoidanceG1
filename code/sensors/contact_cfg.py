@@ -6,7 +6,7 @@ configuration_LH : ContactSensorCfg = ContactSensorCfg(
         update_period=0.0,
         history_length=6,
         debug_vis=True,
-        filter_prim_paths_expr=["{ENV_REGEX_NS}/Obstacle1"]
+        filter_prim_paths_expr=["{ENV_REGEX_NS}/"]
     )
 
 configuration_RH : ContactSensorCfg = ContactSensorCfg(
@@ -14,5 +14,5 @@ configuration_RH : ContactSensorCfg = ContactSensorCfg(
         update_period=0.0,
         history_length=6,
         debug_vis=True,
-        filter_prim_paths_expr=["{ENV_REGEX_NS}/Obstacle1"]
+        filter_prim_paths_expr=["{ENV_REGEX_NS}/"]
     )

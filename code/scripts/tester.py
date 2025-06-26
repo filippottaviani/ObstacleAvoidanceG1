@@ -19,11 +19,11 @@ from isaaclab_rl.sb3 import Sb3VecEnvWrapper
 from isaaclab_tasks.utils import load_cfg_from_registry
 
 from stable_baselines3 import SAC
-from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+from stable_baselines3.common.vec_env import VecNormalize
 
 from torch.utils.tensorboard.writer import SummaryWriter
 import gymnasium as gym
-import os
+import os, time
 import numpy as np
 
 from configs.env_config import ObstacleAvoidanceEnvCfg
@@ -55,10 +55,9 @@ env = VecNormalize(
     norm_obs="normalize_input" in agent_cfg and agent_cfg.pop("normalize_input"),
     norm_reward="normalize_value" in agent_cfg and agent_cfg.pop("normalize_value"),
     clip_obs="clip_obs" in agent_cfg and agent_cfg.pop("clip_obs"),
-    gamma=agent_cfg["gamma"],
+    gamma= "gamma" in agent_cfg and agent_cfg.pop("gamma"),
     clip_reward=np.inf,
 )
-
 
 # Caricamento del modello
 model = SAC.load(
@@ -74,6 +73,7 @@ writer = SummaryWriter()
 obs = env.reset()
 episode_rewards = []
 
+start_time = time.time()
 for ep in range(num_episodes):
     done = False
     total_reward = 0
@@ -88,6 +88,11 @@ for ep in range(num_episodes):
     episode_rewards.append(total_reward)
 
     writer.add_scalar('Episode reward', total_reward, ep)
-    
-print(f"Mean reward: {np.mean(episode_rewards)}, Std: {np.std(episode_rewards)}")
+
+duration = time.time() - start_time
+h, r = divmod(duration, 3600)
+m, s = divmod(r, 60)
+print(f"Test terminato in {int(h)} ore, {int(m)} minuti e {int(s)} secondi.")
+print(f"Ricompensa media: {np.mean(episode_rewards)}")
+
 simulation_app.close()

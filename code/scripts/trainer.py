@@ -43,11 +43,10 @@ from pathlib import Path
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.logger import configure
-from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+from stable_baselines3.common.vec_env import VecNormalize
 
 from configs.env_config import ObstacleAvoidanceEnvCfg
 from task.task_register import * 
-#from models.rgbd_feat_extr import CustomCNNFeatureExtractor
 
 
 def main():
@@ -123,8 +122,8 @@ def main():
     checkpoint_callback = CheckpointCallback(save_freq=10000, save_path=log_dir, name_prefix="model", verbose=2)
 
     # Debug spazi
-    print(env.observation_space)
-    print(env.action_space)
+    #print("Spazio di osservazione: ", env.observation_space)
+    #print("Spazio d'azione: ",env.action_space)
 
     # Addestramento
     start_time = time.time()

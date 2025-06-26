@@ -7,23 +7,18 @@ gamma: 0.99
 tau: 0.005                 
 seed: 42                   
 device: "auto" 
-action_noise: null    
+action_noise: null   
 
 # Configurazione addestramento
 learning_rate: "constant_0.0003"
-learning_starts: 10000  # quando iniziare apprendere la policy   
+learning_starts: 50000  # quando iniziare apprendere la policy   
 n_timesteps: 2000000 # numero totale di timesteps per l'addestramento
-train_freq: 1               
-gradient_steps: 1  
+train_freq: 5              
+gradient_steps: 5  
 
 # Normalizzazioni
 normalize_input: True
-normalize_input: False
+normalize_value: True # da rivere a seconda della variabilità delle ricompense 
 batch_size: 512         
-buffer_size: 10_000
+buffer_size: 10_000 # da aumentare quando si implementa feat extr
 clip_obs: 10.0         
-    
-        
-      
-          
-      
