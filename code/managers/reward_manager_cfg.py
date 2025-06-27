@@ -7,23 +7,25 @@ from managers.mdp import mdp_rew_custom as mdp_custom
 @configclass
 class RewardsCfg:
 
-    '''# Vivo
+    # Vivo
     alive = RewardTermCfg(
         func=mdp.is_alive,
-        weight=0.1
-    )'''
+        weight=5.0
+    )
 
-    '''# In piedi
+    action_rate_l2 = RewardTermCfg(
+        func=mdp.action_rate_l2,
+        weight=-1.0
+    )
+
+    # In piedi
     standing = RewardTermCfg(
-        func="isaaclab.envs.mdp.rewards:joint_pos_limits",
+        func=mdp_custom.standing,
         params={
-            "asset_cfg": SceneEntityCfg(
-                name= "robot",
-                joint_names= ["left_hip_pitch_joint","right_hip_pitch_joint"]
-            )
+            "ref_link": "pelvis"
         },
-        weight=0.1
-    )'''
+        weight=10
+    )
     
     # Caduto
     fallen = RewardTermCfg(
@@ -32,10 +34,10 @@ class RewardsCfg:
             "ref_link": "pelvis",
             "height_thr": 0.25 # soglia di altezza minima
         },
-        weight=-1.0
+        weight=-100.0
     )
     
-    # Cammina
+    '''# Cammina
     walking = RewardTermCfg(
         func=mdp_custom.moving,
         params={
@@ -44,7 +46,7 @@ class RewardsCfg:
             "vel_thr": 0.5 # soglia di velocità minima
         },  
         weight=0.2
-    )
+    )'''
     
     # Fuori dallo spazio di lavoro
     out_of_bounds = RewardTermCfg(
@@ -66,7 +68,7 @@ class RewardsCfg:
             ),
         },
         weight=-0.5,
-    )'''
+    )
 
     # Si avvicina all'obiettivo (penalità leggera)
     position_tracking_soft = RewardTermCfg(
@@ -95,4 +97,4 @@ class RewardsCfg:
             "threshold": 0.3
         },
         weight=10.0
-    )
+    )'''

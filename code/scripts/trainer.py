@@ -5,9 +5,9 @@ from isaaclab.app import AppLauncher
 
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Addestramento per evitamento ostacoli di un robot umanoide.")
-parser.add_argument("--video", action="store_true", default=False, help="Registrazione video durante l'addestramento.")
+parser.add_argument("--video", default=False, help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
-parser.add_argument("--video_interval", type=int, default=2000, help="Intervallo tra registrazioni video (in steps).")
+parser.add_argument("--video_interval", type=int, default=200000, help="Intervallo tra registrazioni video (in steps).")
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default=None, help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
@@ -85,7 +85,11 @@ def main():
     n_timesteps = agent_cfg.pop("n_timesteps")
 
     # Creazione env Isaac
-    env = gym.make(task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
+    env = gym.make(
+        task, 
+        cfg=env_cfg, 
+        render_mode="rgb_array" if args_cli.video else None
+    )
 
     # Wrap per la registrazione video
     if args_cli.video:
@@ -102,7 +106,6 @@ def main():
     # Wrap per stable baselines
     env = Sb3VecEnvWrapper(env)
 
-    
     env = VecNormalize(
         env,
         training=True,
@@ -114,7 +117,11 @@ def main():
     )
 
     # Creazione dell'agente
-    agent = SAC(policy_arch, env, verbose=1, **agent_cfg)
+    agent = SAC(
+        policy_arch, 
+        env, verbose=1, 
+        **agent_cfg
+    )
     new_logger = configure(log_dir, ["stdout", "tensorboard"])
     agent.set_logger(new_logger)
 

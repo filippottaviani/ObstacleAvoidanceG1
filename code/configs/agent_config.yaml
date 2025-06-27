@@ -12,7 +12,7 @@ action_noise: null
 # Configurazione addestramento
 learning_rate: "constant_0.0003"
 learning_starts: 50000  # quando iniziare apprendere la policy   
-n_timesteps: 2000000 # numero totale di timesteps per l'addestramento
+n_timesteps: 1000000 # numero totale di timesteps per l'addestramento
 train_freq: 5              
 gradient_steps: 5  
 
@@ -20,5 +20,5 @@ gradient_steps: 5
 normalize_input: True
 normalize_value: True # da rivere a seconda della variabilità delle ricompense 
 batch_size: 512         
-buffer_size: 10_000 # da aumentare quando si implementa feat extr
+buffer_size: 2_000_000 
 clip_obs: 10.0         

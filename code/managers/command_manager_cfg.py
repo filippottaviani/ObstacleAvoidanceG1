@@ -6,7 +6,7 @@ import math
 
 @configclass
 class CommandsCfg:
-    target = mdp_nav.UniformPose2dCommandCfg(
+    '''target = mdp_nav.UniformPose2dCommandCfg(
         asset_name="robot",
         resampling_time_range= (50.0, 100.0), # da sincronizzare con gli episodi?
         simple_heading=False,
@@ -16,4 +16,4 @@ class CommandsCfg:
             pos_y=(-env_spacing/2, env_spacing/2),  
             heading=(-math.pi, math.pi)
         )
-    )
+    )'''

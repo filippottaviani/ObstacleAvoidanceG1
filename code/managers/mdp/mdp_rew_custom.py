@@ -1,4 +1,4 @@
-import torch
+import torch, math
 
 
 def has_fallen(env, ref_link="pelvis", height_thr=0.3):
@@ -11,7 +11,7 @@ def has_fallen(env, ref_link="pelvis", height_thr=0.3):
 
     # Controllo altezza
     if (pos[:, 2].min().item()) < height_thr:
-        print("Il robot è caduto!")
+        #print("Il robot è caduto!")
         return True
     else:
         return False
@@ -73,6 +73,14 @@ def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
     return out_of_x_limits or out_of_y_limits
     
 
+def standing(env, ref_link="pelvis") -> torch.Tensor:
+    robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
+    base_link = robot.find_bodies(ref_link) # link di riferimento
+    
+    idx = base_link[0][0]  # ID del link di riferimento
+    pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
+
+    return pos[:, 2] # ricompensa proporzionale
 
 
 

@@ -246,7 +246,8 @@ Esistono diversi studi che propongono confronti tra questi ed altri algoritmi pe
 % ancora?
 
 \subsubsection{Soft Actor-Critic}
-Soft Actor-Critic è un algoritmo di Deep Reinforcement Learning quindi sfrutta le reti neurali per l'addestramento dell'agente, nel caso specifico se ne adottano tre: una guida l'actor elaborando una politica stocastica, producendo una distribuzione di probabilità sulle azioni date le osservazioni e gli altri due rappresentano dei critic che apprendono due action-value function. Questa architettura è proposta in evoluzioni recenti di SAC e affronta il problema della sovrastima dei valori di action-value, scegliendo tra le stime delle due reti il valore minimo. A differenza di algoritmi come DDPG o TD3 che utilizzano politiche deterministiche, SAC impiega una politica stocastica, permettendo all'agente di apprendere distribuzioni di azioni multimodali e migliorando l'esplorazione in ambienti con molteplici soluzioni ottimali locali. 
+Soft Actor-Critic, come appena descritto, propone l'ottimizzazione di una politica stocastica attraverso un approccio \textit{off-policy} e si distingue dalle alternative appartenenti alla stessa famiglia grazie alla regolarizzazione dell'entropia. L'impiego di una politica stocastica permette all'agente di apprendere distribuzioni di azioni multimodali e migliora l'esplorazione in ambienti con molteplici ottimi locali. La scelta della regolarizzazione, invece, porta alla ricerca di un compromesso tra ritorno atteso ed entropia, una sorta di bilanciamento tra esplorazione e sfruttamento. L'esplorazione indica la tendenza dell'algoritmo a compiere scelte non ottimali localmente che permettono di visitare stati sconosciuti e approfondire la conoscenza dell'ambiente, mentre, lo sfruttamento descrive la preferenza nella scelta di azioni localmente ottime. Lo scopo di questo bilanciamento è quello di orientare l'apprendimento verso l'ottimalità globale a discapito di quella locale. SAC è un algoritmo di Deep Reinforcement Learning quindi sfrutta le reti neurali per l'addestramento dell'agente. Nelle implementazioni più accreditate se ne adottano tre: una guida l'actor elaborando una politica stocastica, producendo, cioè, una distribuzione di probabilità sulle azioni date le osservazioni e gli altri due rappresentano dei critic che apprendono due action-value function, utili a valutare la bontà della politica attuale. Questa architettura è proposta in evoluzioni recenti di SAC e affronta il problema della sovrastima dei valori di action-value, scegliendo tra le stime delle due reti il valore minimo.
+
 
 Di seguito si riporta la descrizione del supporto teorico di Soft Actor-Critic presente nella documentazione di OpenAI \cite{openaiSAC2023}. L'obiettivo di SAC è massimizzare la somma dei ritorni attesi e dell'entropia della politica:
 \begin{equation}
@@ -254,9 +255,9 @@ Di seguito si riporta la descrizione del supporto teorico di Soft Actor-Critic p
 \end{equation}
 dove $\alpha$ è un iperparametro che bilancia l'impatto dell'entropia e $\mathcal{H}(\pi(\cdot|s_t))$ è l'entropia della politica nello stato $s_t$. Presa in esame una distribuzione di probabilità $p$:
 \begin{equation}
-    H(p)= \mathbb{E}_{z\sim p}[-\log p(x)]
+    \mathcal{H}(p)= \mathbb{E}_{z\sim p}[-\log p(x)]
 \end{equation}
-una metrica che misura la "quantità di informazione" o l'"imprevedibilità" della variabile aleatoria $x$. Questo termine è utilizzato per spronare l'agente ad esplorare; questo migliora molto le prestazioni in ambienti complessi e dinamici in cui politiche di solo sfruttamento\footnote{propensione alla scelta di soluzioni greedy, localmente ottime} possono portare a cadere in minimi locali. La state-value function va adattata alla presenza del termine entropico:
+una metrica che misura la "quantità di informazione" o l'"imprevedibilità" della variabile aleatoria $x$. Come premesso, questo termine è utilizzato per spronare l'agente ad esplorare; questo migliora molto le prestazioni in ambienti complessi e dinamici in cui politiche di solo sfruttamento\footnote{propensione alla scelta di soluzioni greedy, localmente ottime} possono portare a cadere in minimi locali. La state-value function va adattata alla presenza del termine entropico:
 \begin{equation}
     v_\pi(s)= \mathbb{E}_{(s_t,a_t)\sim \rho_\pi}[\sum_{t=0}^\infty \gamma^t(r(s_t,a_t)+ \alpha \mathcal{H}(\pi(\cdot|s_t)))|s_0=s]
 \end{equation}
@@ -278,7 +279,10 @@ Non avendo a disposizione i valori futuri, occorre riscrivere la relazione \ref{
 \begin{equation}
     q_\pi(s,a) \approx \gamma (q_\pi(s',\Tilde{a}')-\alpha \log\pi(\Tilde{a}'|s'))\;\;\;\;\text{ dove }\;\Tilde{a}'\sim \pi(\cdot|s')
 \end{equation}
-I due critic forniscono due stime diverse dell'action-value calcolato come descritto e si decide di tenere in considerazione il valore minore. Ottenuto $q_\pi(s,a)$, è possibile calcolare la loss function utilizzando una metrica Mean Square Bellman Error (MSBE):
+I due Critic forniscono due stime diverse dell'action-value calcolato come descritto e si decide di tenere in considerazione il valore minore. Questo espediente è detto \textit{Clipped Double Q-learning} e serve a limitare la sovrastima della action-value function dovuta alla forma in cui questa viene ricavata. La massimizzazione nell'equazione di Bellman, in presenza di rumore, può imporre un bias positivo da contrastare. La minimizzazione a monte dell'action value tra due stime alternative lenisce questo fenomeno.
+
+
+Ottenuto $q_\pi(s,a)$, è possibile calcolare la loss function utilizzando una metrica Mean Square Bellman Error (MSBE):
 \begin{equation}
     L(\phi,\mathcal{D})= \mathbb{E}_{(s,a,r,s')\sim\mathcal{D}}[(q_\phi(s,a)-y(r,s',d))^2]
 \end{equation}

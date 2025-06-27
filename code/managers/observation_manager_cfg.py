@@ -44,7 +44,7 @@ class ObservationsCfg:
             }
         )
 
-        # RGB-D camera (rgb)
+        '''# RGB-D camera (rgb)
         rgb_image = ObsTerm(
             func= obs.image,
             params={
@@ -82,7 +82,7 @@ class ObservationsCfg:
             params={
                 "command_name": "target"
             }
-        )
+        )'''
 
         def __post_init__(self) -> None:
             self.enable_corruption = False
