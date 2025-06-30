@@ -1,51 +1,40 @@
-from isaaclab.actuators import IdealPDActuatorCfg
+from isaaclab.actuators import ImplicitActuatorCfg
 
-description={"left_hip_pitch_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["left_hip_pitch_joint"]
+description={
+    "legs": ImplicitActuatorCfg(
+            joint_names_expr=[
+                ".*_hip_yaw_joint",
+                ".*_hip_roll_joint",
+                ".*_hip_pitch_joint",
+                ".*_knee_joint"
+            ],
+            effort_limit=300,
+            velocity_limit=100.0,
+            stiffness={
+                ".*_hip_yaw_joint": 150.0,
+                ".*_hip_roll_joint": 150.0,
+                ".*_hip_pitch_joint": 200.0,
+                ".*_knee_joint": 200.0
+            },
+            damping={
+                ".*_hip_yaw_joint": 5.0,
+                ".*_hip_roll_joint": 5.0,
+                ".*_hip_pitch_joint": 5.0,
+                ".*_knee_joint": 5.0
+            },
+            armature={
+                ".*_hip_.*": 0.01,
+                ".*_knee_joint": 0.01
+            },
         ),
-        "left_hip_roll_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["left_hip_roll_joint"]
-        ),
-        "left_hip_yaw_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["left_hip_yaw_joint"]
-        ),
-        "left_knee_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["left_knee_joint"]
-        ),
-        "left_ankle_pitch_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["left_ankle_pitch_joint"]
-        ),
-        "left_ankle_roll_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["left_ankle_roll_joint"]
-        ),
-        "right_hip_pitch_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["right_hip_pitch_joint"]
-        ),
-        "right_hip_roll_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["right_hip_roll_joint"]
-        ),
-        "right_hip_yaw_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["right_hip_yaw_joint"]
-        ),
-        "right_knee_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["right_knee_joint"]
-        ),
-        "right_ankle_pitch_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["right_ankle_pitch_joint"]
-        ),
-        "right_ankle_roll_joint": IdealPDActuatorCfg(
-            effort_limit=200.0, stiffness=200.0, damping=20.0,
-            joint_names_expr=["right_ankle_roll_joint"]
+        "feet": ImplicitActuatorCfg(
+            effort_limit=20,
+            joint_names_expr=[
+                ".*_ankle_pitch_joint", 
+                ".*_ankle_roll_joint"
+            ],
+            stiffness=20.0,
+            damping=2.0,
+            armature=0.01,
         )
-    }
+}

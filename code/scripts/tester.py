@@ -2,9 +2,8 @@ from isaaclab.app import AppLauncher
 import argparse
 
 parser = argparse.ArgumentParser(description="Test del modello per evitamento ostacoli di un robot umanoide.")
-parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--num_episodes", type=int, default=10, help="Numero di episodi da simulare.")
-parser.add_argument("--video", default=False, help="Registrazione video durante l'addestramento.")
+parser.add_argument("--video" , action="store_true", default=False, help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
 parser.add_argument("--video_interval", type=int, default=2000, help="Intervallo tra registrazioni video (in steps).")
 
@@ -24,10 +23,11 @@ from isaaclab_tasks.utils import load_cfg_from_registry
 
 from stable_baselines3 import SAC
 from stable_baselines3.common.vec_env import VecNormalize
+from isaaclab.utils.pretrained_checkpoint import get_published_pretrained_checkpoint
 
 from torch.utils.tensorboard.writer import SummaryWriter
 import gymnasium as gym
-import os, time
+import os, time, torch
 import numpy as np
 from datetime import datetime
 from pathlib import Path
@@ -35,93 +35,117 @@ from pathlib import Path
 from configs.env_config import ObstacleAvoidanceEnvCfg
 from task.task_register import * 
 
+def main():
+    # Percorso del modello salvato
+    model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-06-30_17-45-48.zip" \
+    "")
 
-# Percorso del modello salvato
-model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/sac_obstacle_avoidance")
+    # Configurazione dell'ambiente
+    task = "Isaac-G1ObstacleAvoidance"
+    env_cfg = ObstacleAvoidanceEnvCfg()
+    agent_cfg = load_cfg_from_registry(task, "sb3_cfg_entry_point")
 
-# Configurazione dell'ambiente
-task = "Isaac-G1ObstacleAvoidance"
-env_cfg = ObstacleAvoidanceEnvCfg()
-agent_cfg = load_cfg_from_registry(task, "sb3_cfg_entry_point")
+    # Configurazione della simualazione
+    env_cfg.scene.num_envs = 2
+    env_cfg.sim.device = "cuda:0"
+    env_cfg.sim.dt = 0.02
+    env_cfg.sim.use_gpu_pipeline = True
 
-# impostazione video logging
-root_path = Path.home() / "obstacle_avoidance_g1"/ "code" / "checkpoints"
-run_info = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-log_root_path = os.path.join(root_path,"videos", task)
-log_dir = os.path.join(log_root_path, run_info)
+    # Percorsi
+    root_path = Path.home() / "obstacle_avoidance_g1"/ "code" / "checkpoints"
+    log_root_path = os.path.join("logs", task)
+    log_root_path = os.path.abspath(log_root_path)
+    
+    # impostazione video logging
+    video_root_path = os.path.join(root_path,"videos", task)
+    run_info = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    video_dir = os.path.join(video_root_path, run_info)
 
-# Numero di ambienti e episodi
-env_cfg.scene.num_envs = args_cli.num_envs
-num_episodes = args_cli.num_episodes 
+    # Post-process delle configurazioni
+    agent_cfg = process_sb3_cfg(agent_cfg)
 
- # Post-process delle configurazioni
-agent_cfg = process_sb3_cfg(agent_cfg)
-policy_arch = agent_cfg.pop("policy")
+    # Creazione dell'ambiente
+    env = gym.make(
+        task,
+        cfg=env_cfg, 
+        render_mode="rgb_array" if args_cli.video else None
+    )
 
-# Creazione dell'ambiente
-env = gym.make(
-    task,
-    cfg=env_cfg, 
-    render_mode="rgb_array" if args_cli.video else None
-)
+    # Wrap per la registrazione video
+    if args_cli.video:
+        video_kwargs = {
+            "video_folder": os.path.join(video_dir, "test"),
+            "step_trigger": lambda step: step % args_cli.video_interval == 0,
+            "video_length": args_cli.video_length,
+            "disable_logger": True,
+        }
+        print("[INFO] Recording videos during training.")
+        print_dict(video_kwargs, nesting=4)
+        env = gym.wrappers.RecordVideo(env, **video_kwargs)
 
-# Wrap per la registrazione video
-if args_cli.video:
-    video_kwargs = {
-        "video_folder": os.path.join(log_dir, "videos"),
-        "step_trigger": lambda step: step % args_cli.video_interval == 0,
-        "video_length": args_cli.video_length,
-        "disable_logger": True,
-    }
-    print("[INFO] Recording videos during training.")
-    print_dict(video_kwargs, nesting=4)
-    env = gym.wrappers.RecordVideo(env, **video_kwargs)
+    # Wrap per stable baselines
+    env = Sb3VecEnvWrapper(env)
 
-# Wrap per stable baselines
-env = Sb3VecEnvWrapper(env)
+    # Caricamento delle statistiche di normalizzazione
+    vecnorm_path = os.path.join(root_path,"normalization", "vecnormalize.pkl")
+    if os.path.exists(vecnorm_path):
+        env = VecNormalize.load(vecnorm_path, env)
+        env.training = False
+        env.norm_reward = False
+    elif "normalize_input" in agent_cfg:
+        env = VecNormalize(
+            env,
+            training=False,
+            norm_obs="normalize_input" in agent_cfg and agent_cfg.pop("normalize_input"),
+            clip_obs="clip_obs" in agent_cfg and agent_cfg.pop("clip_obs"),
+        )
+    else:
+        print(f"[ATTENZIONE] File di normalizzazione non trovato: {vecnorm_path}")
 
-# Normalizzazioni
-env = VecNormalize(
-    env,
-    training=True,
-    norm_obs="normalize_input" in agent_cfg and agent_cfg.pop("normalize_input"),
-    norm_reward="normalize_value" in agent_cfg and agent_cfg.pop("normalize_value"),
-    clip_obs="clip_obs" in agent_cfg and agent_cfg.pop("clip_obs"),
-    gamma= "gamma" in agent_cfg and agent_cfg.pop("gamma"),
-    clip_reward=np.inf,
-)
+    # Caricamento del modello
+    print(f"Caricamento dell'agente da {model_path}")
+    model = SAC.load(
+        model_path, 
+        env=env, 
+        verbose=1, 
+        print_system_info=True,
+        **agent_cfg
+    )
 
-# Caricamento del modello
-model = SAC.load(
-    model_path, 
-    env=env, 
-    verbose=1, 
-    **agent_cfg
-)
+    # Valutazione del modello
+    # Il wrapper SB3 per Isaaclab non supporta direttamente evaluate_policy
 
-# Valutazione del modello
-# Il wrapper SB3 per Isaaclab non supporta direttamente evaluate_policy
-obs = env.reset()
-episode_rewards = []
-
-start_time = time.time()
-for ep in range(num_episodes):
-    done = False
-    total_reward = 0
+    # reset environment
     obs = env.reset()
+    timestep = 0
+    start_time = time.time()
 
-    while not done:
-        action, _ = model.predict(obs, deterministic=True)
-        obs, reward, done, info = env.step(action)
-        total_reward += reward
+    # simulate environment
+    while simulation_app.is_running():
         
-        env.render() # Per vedere la simulazione
-    episode_rewards.append(total_reward)
+        # run everything in inference mode
+        with torch.inference_mode():
+            # agent stepping
+            actions, _ = model.predict(obs, deterministic=True)
+            # env stepping
+            obs, reward, done, info = env.step(actions)
+            if done[0]:
+                print(f"[INFO] Episodio terminato con reward: {reward[0]:.2f}")
+                obs = env.reset()
+            
+        if args_cli.video:
+            timestep += 1
+            # Exit the play loop after recording one video
+            if timestep == args_cli.video_length:
+                break
 
-duration = time.time() - start_time
-h, r = divmod(duration, 3600)
-m, s = divmod(r, 60)
-print(f"Test terminato in {int(h)} ore, {int(m)} minuti e {int(s)} secondi.")
-print(f"Ricompensa media: {np.mean(episode_rewards)}")
+    duration = time.time() - start_time
+    h, r = divmod(duration, 3600)
+    m, s = divmod(r, 60)
+    print(f"Test terminato in {int(h)} ore, {int(m)} minuti e {int(s)} secondi.")
 
-simulation_app.close()
+
+if __name__ == "__main__":
+    main()
+    if simulation_app is not None:
+        simulation_app.close()

@@ -1,5 +1,4 @@
 from isaaclab.managers import TerminationTermCfg as DoneTerm
-from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 from managers.mdp import mdp_rew_custom as mdp_custom
 
@@ -13,6 +12,3 @@ class TerminationsCfg:
         func=mdp.time_out, 
         time_out=True
     )
-
-
-    

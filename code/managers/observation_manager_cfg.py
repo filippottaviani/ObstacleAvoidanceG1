@@ -15,17 +15,7 @@ class ObservationsCfg:
         joint_pos_rel = ObsTerm(func=obs.joint_pos_rel)
         joint_vel_rel = ObsTerm(func=obs.joint_vel_rel)
 
-        '''# Contact 
-        foot_contacts = ObsTerm(
-            func=obs.imu_ang_vel,
-            params={
-                "asset_cfg": SceneEntityCfg(
-                    name= "imu"
-                )
-            }
-        )'''
-
-        # IMU
+        # IMU (vel)
         imu_ang_vel = ObsTerm(
             func=obs.imu_ang_vel,
             params={
@@ -35,6 +25,7 @@ class ObservationsCfg:
             }
         )
 
+        # IMU (acc)
         imu_lin_acc = ObsTerm(
             func=obs.imu_lin_acc,
             params={
@@ -43,6 +34,8 @@ class ObservationsCfg:
                 )
             }
         )
+
+        actions = ObsTerm(func=obs.last_action)
 
         '''# RGB-D camera (rgb)
         rgb_image = ObsTerm(
@@ -74,19 +67,20 @@ class ObservationsCfg:
                     name= "lidar"
                 )
             }
-        )
+        )'''
 
-        # Assegnazione target
-        target_position = ObsTerm(
+        '''# Assegnazione target
+        target_position = ObsTerm(S
             func=mdp_custom.target_pos,
             params={
                 "command_name": "target"
             }
         )'''
 
+
         def __post_init__(self) -> None:
-            self.enable_corruption = False
-            self.concatenate_terms = False
+            self.enable_corruption = True
+            self.concatenate_terms = True
 
     policy: PolicyCfg = PolicyCfg()
 

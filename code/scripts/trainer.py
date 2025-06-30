@@ -7,7 +7,7 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description="Addestramento per evitamento ostacoli di un robot umanoide.")
 parser.add_argument("--video", default=False, help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
-parser.add_argument("--video_interval", type=int, default=200000, help="Intervallo tra registrazioni video (in steps).")
+parser.add_argument("--video_interval", type=int, default=20000, help="Intervallo tra registrazioni video (in steps).")
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default=None, help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
@@ -61,6 +61,7 @@ def main():
     # override configuration with command line arguments
     if args_cli.seed is not None:
         agent_cfg["seed"] = args_cli.seed
+    env_cfg.seed = agent_cfg["seed"]
 
     # max iterations for training
     if args_cli.max_iterations:
@@ -92,6 +93,7 @@ def main():
     )
 
     # Wrap per la registrazione video
+    #os.makedirs(os.path.join(log_dir, "videos"), exist_ok=True)
     if args_cli.video:
         video_kwargs = {
             "video_folder": os.path.join(log_dir, "videos"),
@@ -105,7 +107,6 @@ def main():
     
     # Wrap per stable baselines
     env = Sb3VecEnvWrapper(env)
-
     env = VecNormalize(
         env,
         training=True,
@@ -119,22 +120,27 @@ def main():
     # Creazione dell'agente
     agent = SAC(
         policy_arch, 
-        env, verbose=1, 
+        env, 
+        verbose=1, 
+        tensorboard_log=log_dir,
         **agent_cfg
     )
-    new_logger = configure(log_dir, ["stdout", "tensorboard"])
-    agent.set_logger(new_logger)
 
     # Callback dell'agente 
-    checkpoint_callback = CheckpointCallback(save_freq=10000, save_path=log_dir, name_prefix="model", verbose=2)
-
-    # Debug spazi
-    #print("Spazio di osservazione: ", env.observation_space)
-    #print("Spazio d'azione: ",env.action_space)
+    checkpoint_callback = CheckpointCallback(
+        save_freq=10000, 
+        save_path=log_dir, 
+        name_prefix="model", 
+        verbose=2
+    )
 
     # Addestramento
     start_time = time.time()
-    agent.learn(total_timesteps=n_timesteps, callback=checkpoint_callback)
+    agent.learn(
+        total_timesteps=n_timesteps,
+        callback=checkpoint_callback,
+        progress_bar=True
+    )
 
     # Segnalazione fine dell'addestramento
     duration = time.time() - start_time
@@ -143,11 +149,14 @@ def main():
     print(f"Addestramento terminato in {int(h)} ore, {int(m)} minuti e {int(s)} secondi.")
 
     # Salvataggio del modello
-    mod_root_path =os.path.join(root_path,"models", task)
+    mod_root_path =os.path.join(root_path, "models", task)
     mod_dir = os.path.join(mod_root_path, run_info)
-    agent.save(mod_dir, "model")
+    agent.save(mod_dir, "model") 
+    print(f"Modello salvato in: {mod_dir}")
 
-    # Chiusura env
+    # Salvataggio e chiusura env
+    os.makedirs(mod_dir, exist_ok=True) 
+    env.save(os.path.join(root_path, "normalization", "vecnormalize.pkl"))
     env.close()
 
 

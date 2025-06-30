@@ -3,6 +3,7 @@ rgb_x = 192
 rgb_y = 108
 depth_x = 128
 depth_y = 72
+vision = False
 
 # feature extraction
 rgb_feat = 128
@@ -20,13 +21,16 @@ imu_acc_dim = 3
 lidar_dim = 6144
 target_dim = 4
 
-if feat_extr: 
-    obs_dim = rgb_feat + depth_feat + joint_pos + joint_vel + imu_acc_dim + imu_vel_dim + lidar_feat + target_dim
+if vision:
+    if feat_extr: 
+        obs_dim = rgb_feat + depth_feat + joint_pos + joint_vel + imu_acc_dim + imu_vel_dim + lidar_feat + target_dim
+    else:
+        obs_dim = rgb_dim + depth_dim + joint_pos + joint_vel + imu_acc_dim + imu_vel_dim + lidar_dim + target_dim 
 else:
-    obs_dim = rgb_dim + depth_dim + joint_pos + joint_vel + imu_acc_dim + imu_vel_dim + lidar_dim + target_dim 
+    obs_dim = joint_pos + joint_vel + imu_acc_dim + imu_vel_dim + target_dim 
 action_dim = 12
-num_envs = 32
-buffer_size = 100_000
+num_envs = 64
+buffer_size = 2_000_000
 bytes_per_element = 4  
 reward_dim = 9
 done_dim = 5

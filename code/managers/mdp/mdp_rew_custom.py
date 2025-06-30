@@ -10,11 +10,9 @@ def has_fallen(env, ref_link="pelvis", height_thr=0.3):
     #print("Altezza del link ", str(base_link[1])," :", pos[:, 2].min().item())
 
     # Controllo altezza
-    if (pos[:, 2].min().item()) < height_thr:
-        #print("Il robot è caduto!")
-        return True
-    else:
-        return False
+    return 1 - torch.tanh(pos[:, 2])
+
+      
 
 
 def moving(env, ref_link="pelvis", vel_thr=0.1):
@@ -35,24 +33,26 @@ def moving(env, ref_link="pelvis", vel_thr=0.1):
     
 
 def position_error(env, command_name = "target") -> torch.Tensor:
-
     command_rel = env.command_manager.get_command(command_name) 
     distance = torch.norm(command_rel[:, :2], dim=1)  # Distanza dal target nel frame robot
     #print("Distanza dall'obiettivo: ", distance)
 
-    return distance
+    return 1 - torch.tanh(distance)
 
 
-def position_error_tanh(env, std: float, command_name = "target") -> torch.Tensor:
-    distance = position_error(env, command_name)
+def heading_error(env, command_name = "target") -> torch.Tensor:
+    command_rel = env.command_manager.get_command(command_name) 
+    heading_err = torch.norm(command_rel[:, 3]) 
+    #print("Differenza di orientamento: ", heading_err)
 
-    return 1 - torch.tanh(distance / std)
+    return 1 - torch.tanh(heading_err)
 
 
 def target_reached(env,  command_name = "target", threshold=0.3):
     distance = position_error(env, command_name)   
 
     return distance < threshold
+
 
 def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
     robot = env.scene["robot"] # Recupera l'entità robot dalla scena

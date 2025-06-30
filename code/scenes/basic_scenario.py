@@ -20,6 +20,7 @@ class BasicScenarioCfg(InteractiveSceneCfg):
     depth_camera = rgbd_cfg.configuration_depth
     lidar = lidar_cfg.configuration'''
     imu = imu_cfg.configuration
+    contact_sensor_feet = contact_cfg.configuration_feet
     #cont_sensor_LH = contact_cfg.configuration_LH
     #cont_sensor_RH = contact_cfg.configuration_RH
 
