@@ -35,8 +35,6 @@ class ObservationsCfg:
             }
         )
 
-        actions = ObsTerm(func=obs.last_action)
-
         '''# RGB-D camera (rgb)
         rgb_image = ObsTerm(
             func= obs.image,
@@ -79,7 +77,7 @@ class ObservationsCfg:
 
 
         def __post_init__(self) -> None:
-            self.enable_corruption = True
+            self.enable_corruption = False
             self.concatenate_terms = True
 
     policy: PolicyCfg = PolicyCfg()

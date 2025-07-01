@@ -11,7 +11,7 @@ parser.add_argument("--video_interval", type=int, default=20000, help="Intervall
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default=None, help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
-parser.add_argument("--max_iterations", type=int, default=100000, help="Iterazione per ogni ambiente.")
+parser.add_argument("--max_iterations", type=int, default=100000, help="Iterazione per ogni ambiente.") 
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)

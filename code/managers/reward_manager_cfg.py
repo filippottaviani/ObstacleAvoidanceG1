@@ -3,6 +3,7 @@ from isaaclab.utils import configclass
 from isaaclab.envs import mdp
 from managers.mdp import mdp_rew_custom as mdp_custom
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
+import isaaclab.envs.mdp.rewards as mdp1
 import math
 
 
@@ -12,26 +13,37 @@ class RewardsCfg:
     # Limita il nervosismo delle azioni
     action_rate_l2 = RewardTermCfg(
         func=mdp.action_rate_l2,
-        weight=-0.05
+        weight=-0.1
     )
 
     # In piedi
     standing = RewardTermCfg(
         func=mdp_custom.standing,
         params={
-            "ref_link": "pelvis"
+            "ref_link": "pelvis",
+            "tol": 15.0
         },
-        weight=5.0
+        weight=10.0
     )
-    
-    # Caduto [DA SISTEMARE]
+
+    # Fermo 
+    still = RewardTermCfg(
+        func=mdp_custom.low_velocity,
+        params={
+            "ref_link": "pelvis",
+            "tol": 1.0
+        },
+        weight = 1.0
+    )
+
+    # Caduto
     fallen = RewardTermCfg(
         func=mdp_custom.has_fallen,
         params={
             "ref_link": "pelvis",
-            "height_thr": 0.3 # soglia di altezza minima
+            "thr": 0.5 # severità della funzione tanh
         },
-        weight=-1.0
+        weight=-10.0
     )
 
     # Fuori dallo spazio di lavoro
@@ -44,32 +56,13 @@ class RewardsCfg:
         weight=-1.0
     )
 
-    '''# Assecondare il sollevamento del piede destro
-    feet_air_time_R = RewardTermCfg(
-        func=mdp.feet_air_time,
+    '''# movimento in avanti
+    moving_forward = RewardTermCfg(
+        func=mdp_custom.moving,
         params={
-            "sensor_cfg": SceneEntityCfg(
-                "contact_sensor_feet", 
-                body_names="right_ankle_roll_link"
-            ),
-            "command_name": "target",
-            "threshold": 0.5,
+            "ref_link": "pelvis"
         },
-        weight=2.0
-    )
-'''
-    '''# Assecondare il sollevamento del piede sinistro
-    feet_air_time_L = RewardTermCfg(
-        func=mdp.feet_air_time,
-        params={
-            "sensor_cfg": SceneEntityCfg(
-                "contact_sensor_feet", 
-                body_names="left_ankle_roll_link"
-            ),
-            "command_name": "target",
-            "threshold": 0.5,
-        },
-        weight=2.0
+        weight=1.0
     )'''
 
     '''# Colpisce un ostacolo

@@ -12,3 +12,4 @@ class TerminationsCfg:
         func=mdp.time_out, 
         time_out=True
     )
+

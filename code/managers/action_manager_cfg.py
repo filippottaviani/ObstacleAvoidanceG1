@@ -20,5 +20,5 @@ class ActionsCfg:
             "right_ankle_pitch_joint",
             "right_ankle_roll_joint"
         ],
-        scale= 1.0
+        scale= 0.5
     )

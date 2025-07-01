@@ -33,16 +33,16 @@ configuration : ArticulationCfg = ArticulationCfg(prim_path="/World/envs/env_.*/
         init_state=ArticulationCfg.InitialStateCfg(
             pos=(0.0, 0.0, 0.75),
             joint_pos={
-                "left_hip_pitch_joint": -0.20,
+                "left_hip_pitch_joint": 0.0,
                 "left_hip_roll_joint": 0.0,
                 "left_hip_yaw_joint": 0.0,
-                "left_knee_joint": 0.42,
+                "left_knee_joint": 0.0,
                 "left_ankle_pitch_joint": 0.0,
                 "left_ankle_roll_joint": 0.0,
-                "right_hip_pitch_joint": -0.20,
+                "right_hip_pitch_joint": 0.0,
                 "right_hip_roll_joint": 0.0,
                 "right_hip_yaw_joint": 0.0,
-                "right_knee_joint": 0.42,
+                "right_knee_joint": 0.0,
                 "right_ankle_pitch_joint": 0.0,
                 "right_ankle_roll_joint": 0.0
             },

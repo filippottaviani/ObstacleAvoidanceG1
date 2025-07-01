@@ -1,7 +1,7 @@
 import torch, math
 
 
-def has_fallen(env, ref_link="pelvis", height_thr=0.3):
+def has_fallen(env, ref_link="pelvis", thr=0.5)->torch.Tensor:
     robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link) # link di riferimento
     
@@ -9,27 +9,19 @@ def has_fallen(env, ref_link="pelvis", height_thr=0.3):
     pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
     #print("Altezza del link ", str(base_link[1])," :", pos[:, 2].min().item())
 
-    # Controllo altezza
-    return 1 - torch.tanh(pos[:, 2])
-
-      
+    return pos[:, 2] < thr # tentativo gauss
 
 
-def moving(env, ref_link="pelvis", vel_thr=0.1):
+def moving(env, ref_link="pelvis"):
     robot = env.scene["robot"] # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link)  # link di riferimento
     idx = base_link[0][0]  # ID del link di riferimento
-    vel = robot.data.body_link_vel_w[:,idx,:]  # Posizione del link di riferimento
+    
+    vel = robot.data.body_link_vel_w[:,idx,0:2] 
+    speed = torch.norm(vel, dim=1)
+    #print(f"Velocità del robot: {speed}")
 
-    # Calcola le velocità medie laterali
-    velocity_x = vel[:, 0].mean()
-    velocity_y = vel[:, 1].mean() 
-    #print(f"Velocità del robot: x={velocity_x}, y={velocity_y}")
-
-    if abs(velocity_x) > vel_thr or abs(velocity_y) > vel_thr:  
-        return True
-    else:
-        return False
+    return torch.tanh(speed)
     
 
 def position_error(env, command_name = "target") -> torch.Tensor:
@@ -42,7 +34,7 @@ def position_error(env, command_name = "target") -> torch.Tensor:
 
 def heading_error(env, command_name = "target") -> torch.Tensor:
     command_rel = env.command_manager.get_command(command_name) 
-    heading_err = torch.norm(command_rel[:, 3]) 
+    heading_err = command_rel[:, 3]
     #print("Differenza di orientamento: ", heading_err)
 
     return 1 - torch.tanh(heading_err)
@@ -64,25 +56,31 @@ def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
 
     def_pos = def_root_pos + env_pos  # posizione di default del root link rispetto al mondo
     act_pos = robot.data.body_link_pos_w[:,idx,:] # posizione attuale del link di riferimento
-    #print("Posizione di default:", def_pos)  
-    #print("Posizione attuale:", act_pos)
+    #print(f"Posizione di default: {def_pos} e posizione attuale: {act_pos}")  
 
-    out_of_x_limits = True if abs(act_pos[:, 0] - def_pos[:, 0]).max() > max_dist else False
-    out_of_y_limits = True if abs(act_pos[:, 1] - def_pos[:, 1]).max() > max_dist else False
-
-    return out_of_x_limits or out_of_y_limits
+    delta = torch.abs(act_pos[:, :2] - def_pos[:, :2])
+    out = (delta > max_dist).any(dim=1).float()  # [B]
+    return -out
     
 
-def standing(env, ref_link="pelvis") -> torch.Tensor:
+def standing(env, ref_link="pelvis", tol=15) -> torch.Tensor:
     robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link) # link di riferimento
+    std_height = 0.8 
     
     idx = base_link[0][0]  # ID del link di riferimento
     pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
 
-    return pos[:, 2] # ricompensa proporzionale
+    return torch.exp(-tol * ((pos[:, 2] - std_height) ** 2)) # tentativo gauss # ricompensa quadratica 
 
 
+def low_velocity(env, ref_link="pelvis", tol=1.0):
+    robot = env.scene["robot"]
+    idx = robot.find_bodies(ref_link)[0][0]
+    vel = robot.data.body_link_vel_w[:, idx, 0:2]
+    speed = torch.norm(vel, dim=1)
+
+    return torch.exp(-tol * speed**2)
 
 
 

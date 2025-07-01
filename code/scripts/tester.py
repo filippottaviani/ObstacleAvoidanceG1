@@ -23,9 +23,7 @@ from isaaclab_tasks.utils import load_cfg_from_registry
 
 from stable_baselines3 import SAC
 from stable_baselines3.common.vec_env import VecNormalize
-from isaaclab.utils.pretrained_checkpoint import get_published_pretrained_checkpoint
 
-from torch.utils.tensorboard.writer import SummaryWriter
 import gymnasium as gym
 import os, time, torch
 import numpy as np
@@ -37,8 +35,7 @@ from task.task_register import *
 
 def main():
     # Percorso del modello salvato
-    model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-06-30_17-45-48.zip" \
-    "")
+    model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-07-01_17-19-55.zip")
 
     # Configurazione dell'ambiente
     task = "Isaac-G1ObstacleAvoidance"
@@ -46,7 +43,7 @@ def main():
     agent_cfg = load_cfg_from_registry(task, "sb3_cfg_entry_point")
 
     # Configurazione della simualazione
-    env_cfg.scene.num_envs = 2
+    env_cfg.scene.num_envs = 1
     env_cfg.sim.device = "cuda:0"
     env_cfg.sim.dt = 0.02
     env_cfg.sim.use_gpu_pipeline = True
@@ -108,34 +105,25 @@ def main():
         model_path, 
         env=env, 
         verbose=1, 
-        print_system_info=True,
-        **agent_cfg
+        print_system_info=True
     )
 
     # Valutazione del modello
     # Il wrapper SB3 per Isaaclab non supporta direttamente evaluate_policy
-
-    # reset environment
     obs = env.reset()
     timestep = 0
     start_time = time.time()
 
-    # simulate environment
     while simulation_app.is_running():
         
-        # run everything in inference mode
         with torch.inference_mode():
-            # agent stepping
-            actions, _ = model.predict(obs, deterministic=True)
-            # env stepping
-            obs, reward, done, info = env.step(actions)
+            actions, _ = model.predict(obs, deterministic=True) # Step dell'agente
+            obs, reward, done, info = env.step(actions) # Step dell'ambiente 
             if done[0]:
                 print(f"[INFO] Episodio terminato con reward: {reward[0]:.2f}")
                 obs = env.reset()
-            
         if args_cli.video:
             timestep += 1
-            # Exit the play loop after recording one video
             if timestep == args_cli.video_length:
                 break
 

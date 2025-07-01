@@ -3,18 +3,20 @@ policy: "MlpPolicy"
 ent_coef: "auto" 
 target_update_interval: 1   
 target_entropy: "auto"      
-gamma: 0.99                
-tau: 0.005                 
+gamma: 0.98                
+tau: 0.02                 
 seed: 42                   
 device: "auto" 
-action_noise: null   
+action_noise: null
+use_sde: True   
+policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 # Configurazione addestramento
-learning_rate: "constant_0.0003"
+learning_rate: "constant_0.00073"
 learning_starts: 10000  # quando iniziare apprendere la policy   
-n_timesteps: 1000000 # numero totale di timesteps per l'addestramento
-train_freq: 5              
-gradient_steps: 5  
+n_timesteps: 1_000_000 # numero totale di timesteps per l'addestramento
+train_freq: 64              
+gradient_steps: 64  
 
 # Normalizzazioni
 normalize_input: True
