@@ -11,6 +11,7 @@ def has_fallen(env, ref_link="pelvis", thr=0.5)->torch.Tensor:
 
     return pos[:, 2] < thr 
 
+
 def moving(env, ref_link="pelvis"):
     robot = env.scene["robot"] # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link)  # link di riferimento
@@ -77,10 +78,10 @@ def standing(env, ref_link="pelvis", tol=15) -> torch.Tensor:
 def low_velocity(env, ref_link="pelvis", tol=1.0):
     robot = env.scene["robot"]
     idx = robot.find_bodies(ref_link)[0][0]
-    vel = robot.data.body_link_vel_w[:, idx, 0:2]
+    vel = robot.data.body_link_vel_w[:, idx, :3]
     speed = torch.norm(vel, dim=1)
 
-    return torch.exp(-tol * speed**2)
+    return 1-torch.exp(-tol * speed**2)
 
 
 

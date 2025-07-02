@@ -35,7 +35,7 @@ from task.task_register import *
 
 def main():
     # Percorso del modello salvato
-    model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-07-01_17-19-55.zip")
+    model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-07-02_10-52-49.zip")
 
     # Configurazione dell'ambiente
     task = "Isaac-G1ObstacleAvoidance"

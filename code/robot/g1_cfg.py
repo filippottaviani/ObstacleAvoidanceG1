@@ -18,7 +18,7 @@ configuration : ArticulationCfg = ArticulationCfg(prim_path="/World/envs/env_.*/
             retain_accelerations=False,
             linear_damping=0.0,
             angular_damping=0.0,
-            max_linear_velocity=1000.0, # prova
+            max_linear_velocity=1000.0,
             max_angular_velocity=1000.0,
             max_depenetration_velocity=1.0,
         ),
@@ -33,18 +33,12 @@ configuration : ArticulationCfg = ArticulationCfg(prim_path="/World/envs/env_.*/
         init_state=ArticulationCfg.InitialStateCfg(
             pos=(0.0, 0.0, 0.8),
             joint_pos={
-                "left_hip_pitch_joint": 0.0,
-                "left_hip_roll_joint": 0.0,
-                "left_hip_yaw_joint": 0.0,
-                "left_knee_joint": 0.0,
-                "left_ankle_pitch_joint": 0.0,
-                "left_ankle_roll_joint": 0.0,
-                "right_hip_pitch_joint": 0.0,
-                "right_hip_roll_joint": 0.0,
-                "right_hip_yaw_joint": 0.0,
-                "right_knee_joint": 0.0,
-                "right_ankle_pitch_joint": 0.0,
-                "right_ankle_roll_joint": 0.0
+                ".*_hip_pitch_joint": -0.2,
+                ".*_hip_roll_joint": 0.0,
+                ".*_hip_yaw_joint": 0.0,
+                ".*_knee_joint": 0.42,
+                ".*_ankle_pitch_joint": -0.23,
+                ".*_ankle_roll_joint": 0.0
             },
             joint_vel={".*": 0.0},
         ),
@@ -53,7 +47,3 @@ configuration : ArticulationCfg = ArticulationCfg(prim_path="/World/envs/env_.*/
         actuators = actuators.description,
         soft_joint_pos_limit_factor=0.9
     )
-
-
-
-

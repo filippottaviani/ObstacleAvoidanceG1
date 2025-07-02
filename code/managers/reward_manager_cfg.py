@@ -13,7 +13,7 @@ class RewardsCfg:
     # Limita il nervosismo delle azioni
     action_rate_l2 = RewardTermCfg(
         func=mdp.action_rate_l2,
-        weight=-0.1
+        weight=-0.01
     )
 
     # In piedi
@@ -23,25 +23,25 @@ class RewardsCfg:
             "ref_link": "pelvis",
             "tol": 15.0
         },
-        weight=10.0
+        weight=20.0
     )
 
-    # Fermo 
+    '''# Fermo 
     still = RewardTermCfg(
         func=mdp_custom.low_velocity,
         params={
             "ref_link": "pelvis",
             "tol": 1.0
         },
-        weight = 1.0
-    )
+        weight = -10.0
+    )'''
 
     # Caduto
     fallen = RewardTermCfg(
         func=mdp_custom.has_fallen,
         params={
             "ref_link": "pelvis",
-            "thr": 0.5 # severità della funzione tanh
+            "thr": 0.5 
         },
         weight=-10.0
     )
