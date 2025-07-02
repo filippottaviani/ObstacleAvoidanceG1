@@ -31,7 +31,7 @@ class RewardsCfg:
         weight=10.0
     )'''
 
-    '''
+    
     # Caduto
     fallen = RewardTermCfg(
         func=mdp_custom.has_fallen,
@@ -39,8 +39,8 @@ class RewardsCfg:
             "ref_link": "pelvis",
             "thr": 0.5 
         },
-        weight=-50.0
-    )'''
+        weight=-10.0
+    )
 
     '''# Fuori dallo spazio di lavoro
     out_of_bounds = RewardTermCfg(
