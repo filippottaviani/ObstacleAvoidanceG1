@@ -9,11 +9,11 @@ seed: 42
 device: "auto" 
 action_noise: null
 use_sde: True   
-policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+policy_kwargs: "dict(log_std_init=-3, net_arch=[1024, 1024])"
 
 # Configurazione addestramento
 learning_rate: "constant_0.00073"
-learning_starts: 10000  # quando iniziare apprendere la policy   
+learning_starts: 50_000  # quando iniziare apprendere la policy   
 n_timesteps: 1_000_000 # numero totale di timesteps per l'addestramento
 train_freq: 64
 gradient_steps: 64

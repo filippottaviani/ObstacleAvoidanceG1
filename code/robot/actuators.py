@@ -33,8 +33,8 @@ description={
                 ".*_ankle_pitch_joint", 
                 ".*_ankle_roll_joint"
             ],
-            stiffness=200.0,
-            damping=5.0,
+            stiffness=20.0,
+            damping=2.0,
             armature=0.01,
         )
 }

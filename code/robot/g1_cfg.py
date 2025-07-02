@@ -2,11 +2,8 @@
 # https://github.com/isaac-sim/IsaacLab/blob/main/source/isaaclab_assets/isaaclab_assets/robots/unitree.py#L273
 
 import isaaclab.sim as sim_utils
-from isaaclab.actuators import IdealPDActuatorCfg
 from isaaclab.assets import ArticulationCfg
 from isaaclab.sim.spawners.from_files import UsdFileCfg
-from isaaclab.sensors import ImuCfg
-from isaaclab.actuators import IdealPDActuatorCfg
 from robot import actuators
 
 configuration : ArticulationCfg = ArticulationCfg(prim_path="/World/envs/env_.*/Robot", 

@@ -11,7 +11,7 @@ parser.add_argument("--video_interval", type=int, default=30_000, help="Interval
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default=None, help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
-parser.add_argument("--max_iterations", type=int, default=100_000, help="Iterazione per ogni ambiente.") # default 100_000
+parser.add_argument("--max_iterations", type=int, default=100_000, help="Iterazione per ogni ambiente.") 
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
@@ -41,7 +41,7 @@ from datetime import datetime
 from pathlib import Path
 
 from stable_baselines3 import SAC
-from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.callbacks import CheckpointCallback, LogEveryNTimesteps
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecNormalize
 
@@ -81,7 +81,7 @@ def main():
     dump_pickle(os.path.join(log_dir, "params", "agent.pkl"), agent_cfg)
 
     # Post-process delle configurazioni
-    agent_cfg = process_sb3_cfg(agent_cfg)
+    agent_cfg = process_sb3_cfg(agent_cfg, env_cfg.scene.num_envs)
     policy_arch = agent_cfg.pop("policy")
     n_timesteps = agent_cfg.pop("n_timesteps")
 
@@ -128,17 +128,21 @@ def main():
 
     # Callback dell'agente 
     checkpoint_callback = CheckpointCallback(
-        save_freq=10000, 
+        save_freq=1000, 
         save_path=log_dir, 
         name_prefix="model", 
         verbose=2
     )
+    callbacks = [
+        checkpoint_callback, 
+        LogEveryNTimesteps(n_steps=args_cli.log_interval)
+    ]
 
     # Addestramento
     start_time = time.time()
     agent.learn(
         total_timesteps=n_timesteps,
-        callback=checkpoint_callback,
+        callback=callbacks,
         progress_bar=True
     )
 
@@ -156,7 +160,8 @@ def main():
 
     # Salvataggio e chiusura env
     os.makedirs(mod_dir, exist_ok=True) 
-    env.save(os.path.join(root_path, "normalization", "vecnormalize.pkl"))
+    if isinstance(env, VecNormalize):
+        env.save(os.path.join(root_path, "normalization", "vecnormalize.pkl"))
     env.close()
 
 
