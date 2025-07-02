@@ -1,5 +1,6 @@
 from isaaclab.utils import configclass
 from isaaclab.envs.mdp import JointEffortActionCfg
+import torch
 
 @configclass
 class ActionsCfg:
@@ -22,3 +23,4 @@ class ActionsCfg:
         ],
         scale= 0.5
     )
+

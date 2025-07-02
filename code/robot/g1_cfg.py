@@ -18,7 +18,7 @@ configuration : ArticulationCfg = ArticulationCfg(prim_path="/World/envs/env_.*/
             retain_accelerations=False,
             linear_damping=0.0,
             angular_damping=0.0,
-            max_linear_velocity=1000.0,
+            max_linear_velocity=1000.0, # prova
             max_angular_velocity=1000.0,
             max_depenetration_velocity=1.0,
         ),
@@ -31,7 +31,7 @@ configuration : ArticulationCfg = ArticulationCfg(prim_path="/World/envs/env_.*/
 
         # articolazioni
         init_state=ArticulationCfg.InitialStateCfg(
-            pos=(0.0, 0.0, 0.75),
+            pos=(0.0, 0.0, 0.8),
             joint_pos={
                 "left_hip_pitch_joint": 0.0,
                 "left_hip_roll_joint": 0.0,

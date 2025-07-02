@@ -46,7 +46,7 @@ class RewardsCfg:
         weight=-10.0
     )
 
-    # Fuori dallo spazio di lavoro
+    '''# Fuori dallo spazio di lavoro
     out_of_bounds = RewardTermCfg(
         func=mdp_custom.out_of_manual_bound,
         params={
@@ -54,7 +54,7 @@ class RewardsCfg:
             "ref_link": "pelvis"  # link di riferimento per il controllo
         },
         weight=-1.0
-    )
+    )'''
 
     '''# movimento in avanti
     moving_forward = RewardTermCfg(

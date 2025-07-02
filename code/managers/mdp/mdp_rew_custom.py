@@ -9,8 +9,7 @@ def has_fallen(env, ref_link="pelvis", thr=0.5)->torch.Tensor:
     pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
     #print("Altezza del link ", str(base_link[1])," :", pos[:, 2].min().item())
 
-    return pos[:, 2] < thr # tentativo gauss
-
+    return pos[:, 2] < thr 
 
 def moving(env, ref_link="pelvis"):
     robot = env.scene["robot"] # Recupera l'entità robot dalla scena
@@ -59,7 +58,8 @@ def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
     #print(f"Posizione di default: {def_pos} e posizione attuale: {act_pos}")  
 
     delta = torch.abs(act_pos[:, :2] - def_pos[:, :2])
-    out = (delta > max_dist).any(dim=1).float()  # [B]
+    out = (delta > max_dist).any(dim=1).float() 
+
     return -out
     
 
@@ -71,7 +71,7 @@ def standing(env, ref_link="pelvis", tol=15) -> torch.Tensor:
     idx = base_link[0][0]  # ID del link di riferimento
     pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
 
-    return torch.exp(-tol * ((pos[:, 2] - std_height) ** 2)) # tentativo gauss # ricompensa quadratica 
+    return torch.exp(-tol * ((pos[:, 2] - std_height) ** 2)) # tentativo gauss
 
 
 def low_velocity(env, ref_link="pelvis", tol=1.0):
