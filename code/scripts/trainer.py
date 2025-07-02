@@ -6,12 +6,12 @@ from isaaclab.app import AppLauncher
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Addestramento per evitamento ostacoli di un robot umanoide.")
 parser.add_argument("--video", action="store_true", help="Registrazione video durante l'addestramento.")
-parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
-parser.add_argument("--video_interval", type=int, default=20000, help="Intervallo tra registrazioni video (in steps).")
+parser.add_argument("--video_length", type=int, default=300, help="Lunghezza delle registrazioni video (in steps).")
+parser.add_argument("--video_interval", type=int, default=30_000, help="Intervallo tra registrazioni video (in steps).")
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default=None, help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
-parser.add_argument("--max_iterations", type=int, default=100000, help="Iterazione per ogni ambiente.") 
+parser.add_argument("--max_iterations", type=int, default=100_000, help="Iterazione per ogni ambiente.") # default 100_000
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)

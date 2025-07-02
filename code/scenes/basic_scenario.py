@@ -7,7 +7,7 @@ from sensors import contact_cfg, imu_cfg, rgbd_cfg, lidar_cfg
 from robot import g1_cfg
 
 
-env_spacing: float = 5.0  # Spaziatura dell'ambiente
+env_spacing: float = 10.0  # Spaziatura dell'ambiente
 
 @configclass
 class BasicScenarioCfg(InteractiveSceneCfg):

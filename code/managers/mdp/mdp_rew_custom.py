@@ -84,6 +84,7 @@ def low_velocity(env, ref_link="pelvis", tol=1.0):
     return 1-torch.exp(-tol * speed**2)
 
 
-
+def stepping(env):
+    pass 
 
 

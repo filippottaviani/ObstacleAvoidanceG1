@@ -2,6 +2,7 @@ from isaaclab.managers import ObservationGroupCfg as ObsGroup
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
+import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 import isaaclab.envs.mdp.observations as obs
 import managers.mdp.mdp_obs_custom as mdp_custom
 
@@ -67,17 +68,17 @@ class ObservationsCfg:
             }
         )'''
 
-        '''# Assegnazione target
-        target_position = ObsTerm(S
-            func=mdp_custom.target_pos,
+        # Assegnazione del comando
+        velocity_commands = ObsTerm(
+            func=mdp.generated_commands, 
             params={
-                "command_name": "target"
+                "command_name": "base_velocity"
             }
-        )'''
+        )
 
 
         def __post_init__(self) -> None:
-            self.enable_corruption = False
+            self.enable_corruption = True
             self.concatenate_terms = True
 
     policy: PolicyCfg = PolicyCfg()

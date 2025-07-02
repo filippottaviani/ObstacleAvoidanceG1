@@ -73,6 +73,3 @@ def pc_number_fixer(pc, num_points):
 
     return points_sampled 
 
-
-def target_pos(env, command_name: str) -> torch.Tensor:
-    return env.command_manager.get_command(command_name)

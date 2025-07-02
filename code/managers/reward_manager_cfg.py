@@ -10,32 +10,28 @@ import math
 @configclass
 class RewardsCfg:
 
+    '''alive = RewardTermCfg(
+        func=mdp.is_alive, 
+        weight=0.5
+    )'''
+
     # Limita il nervosismo delle azioni
     action_rate_l2 = RewardTermCfg(
         func=mdp.action_rate_l2,
-        weight=-0.01
+        weight=-0.01 
     )
 
-    # In piedi
+    '''# In piedi
     standing = RewardTermCfg(
         func=mdp_custom.standing,
         params={
             "ref_link": "pelvis",
             "tol": 15.0
         },
-        weight=20.0
-    )
-
-    '''# Fermo 
-    still = RewardTermCfg(
-        func=mdp_custom.low_velocity,
-        params={
-            "ref_link": "pelvis",
-            "tol": 1.0
-        },
-        weight = -10.0
+        weight=10.0
     )'''
 
+    '''
     # Caduto
     fallen = RewardTermCfg(
         func=mdp_custom.has_fallen,
@@ -43,8 +39,8 @@ class RewardsCfg:
             "ref_link": "pelvis",
             "thr": 0.5 
         },
-        weight=-10.0
-    )
+        weight=-50.0
+    )'''
 
     '''# Fuori dallo spazio di lavoro
     out_of_bounds = RewardTermCfg(
@@ -62,8 +58,31 @@ class RewardsCfg:
         params={
             "ref_link": "pelvis"
         },
-        weight=1.0
+        weight=10.0
     )'''
+
+    feet_air_time = RewardTermCfg(
+        func=mdp.feet_air_time,
+        weight=0.125,
+        params={
+            "sensor_cfg": SceneEntityCfg(
+                "contact_sensor_feet", 
+                body_names=".*_ankle_roll_link"
+            ),
+            "command_name": "base_velocity",
+            "threshold": 0.5,
+        },
+    )
+
+       # -- task
+    track_lin_vel_xy_exp = RewardTermCfg(func=mdp.track_lin_vel_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)})
+    track_ang_vel_z_exp = RewardTermCfg(func=mdp.track_ang_vel_z_exp, weight=0.5, params={"command_name": "base_velocity", "std": math.sqrt(0.25)})
+
+    # -- penalties
+    lin_vel_z_l2 = RewardTermCfg(func=mdp.lin_vel_z_l2, weight=-2.0)
+    ang_vel_xy_l2 = RewardTermCfg(func=mdp.ang_vel_xy_l2, weight=-0.05)
+    dof_torques_l2 = RewardTermCfg(func=mdp.joint_torques_l2, weight=-1.0e-5)
+    dof_acc_l2 = RewardTermCfg(func=mdp.joint_acc_l2, weight=-2.5e-7)
 
     '''# Colpisce un ostacolo
     hit_obstacle = RewardTermCfg(
@@ -93,9 +112,9 @@ class RewardsCfg:
             "command_name": "target"
         },
         weight=-1.0,
-    )
+    )'''
 
-    # Obiettivo raggiunto
+    '''# Obiettivo raggiunto
     reach_goal = RewardTermCfg(
         func=mdp_custom.target_reached,
         params={ 
