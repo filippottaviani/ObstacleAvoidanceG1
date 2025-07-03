@@ -1,23 +1,21 @@
-from managers.event_manager_cfg import EventsCfg
-from managers.action_manager_cfg import ActionsCfg
-from managers.observation_manager_cfg import ObservationsCfg
-from managers.reward_manager_cfg import RewardsCfg
-from managers.termination_manager_cfg import TerminationsCfg
-from managers.curriculum_manager_cfg import CurriculumCfg
-from managers.command_manager_cfg import CommandsCfg
-from scenes.basic_scenario import BasicScenarioCfg
+from managers.locomotion.event_manager_cfg import EventsCfg
+from managers.locomotion.action_manager_cfg import ActionsCfg
+from managers.locomotion.observation_manager_cfg import ObservationsCfg
+from managers.locomotion.reward_manager_cfg import RewardsCfg
+from managers.locomotion.termination_manager_cfg import TerminationsCfg
+from managers.locomotion.curriculum_manager_cfg import CurriculumCfg
+from managers.locomotion.command_manager_cfg import CommandsCfg
+from scenes.empty_scenario import EmptyScenario
 
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.utils import configclass
 
-import torch
-
 
 @configclass
-class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
+class LocomotionEnvCfg(ManagerBasedRLEnvCfg):
 
     # configurazione dell'environment
-    scene : BasicScenarioCfg = BasicScenarioCfg(env_spacing=5)
+    scene : EmptyScenario = EmptyScenario(env_spacing=5)
     observations : ObservationsCfg = ObservationsCfg()
     actions : ActionsCfg = ActionsCfg()
     events : EventsCfg = EventsCfg()
@@ -29,7 +27,7 @@ class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
 
     def __post_init__(self) -> None:
         # Impostazioni visive
-        self.viewer.eye = [10, 0.0, 6.0]
+        self.viewer.eye = [15, 0.0, 6.0]
         self.viewer.lookat = [0.0, 0.0, 3.0]
 
         # Impostazioni dell'episodio

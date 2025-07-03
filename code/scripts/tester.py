@@ -3,6 +3,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Test del modello per evitamento ostacoli di un robot umanoide.")
 parser.add_argument("--num_episodes", type=int, default=10, help="Numero di episodi da simulare.")
+parser.add_argument("--task", type=str, default="Isaac-G1Locomotion", help="Nome del task.")
 parser.add_argument("--video" , action="store_true", default=False, help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
 parser.add_argument("--video_interval", type=int, default=2000, help="Intervallo tra registrazioni video (in steps).")
@@ -30,17 +31,19 @@ import numpy as np
 from datetime import datetime
 from pathlib import Path
 
-from configs.env_config import ObstacleAvoidanceEnvCfg
+from code.task.obstacle_avoidance.oa_env_config import ObstacleAvoidanceEnvCfg
 from task.task_register import * 
 
 def main():
-    # Percorso del modello salvato
-    model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-07-02_11-33-41.zip")
-
-    # Configurazione dell'ambiente
-    task = "Isaac-G1ObstacleAvoidance"
-    env_cfg = ObstacleAvoidanceEnvCfg()
+    # Configurazione
+    task = args_cli.task
+    env_cfg = load_cfg_from_registry(task, "env_cfg_entry_point")
     agent_cfg = load_cfg_from_registry(task, "sb3_cfg_entry_point")
+    
+    # Percorso del modello salvato
+    #model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-07-02_11-33-41.zip")
+    mod_root_path =os.path.join("~/obstacle_avoidance_g1/code/checkpoints/models", task)
+    model_path = os.path.join(mod_root_path,"2025-07-02_11-33-41.zip") 
 
     # Configurazione della simualazione
     env_cfg.scene.num_envs = 1
@@ -130,7 +133,7 @@ def main():
     duration = time.time() - start_time
     h, r = divmod(duration, 3600)
     m, s = divmod(r, 60)
-    print(f"Test terminato in {int(h)} ore, {int(m)} minuti e {int(s)} secondi.")
+    print(f"Test per {task} terminato in {int(h)} ore, {int(m)} minuti e {int(s)} secondi.")
 
 
 if __name__ == "__main__":

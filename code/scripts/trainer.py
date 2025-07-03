@@ -9,7 +9,7 @@ parser.add_argument("--video", action="store_true", help="Registrazione video du
 parser.add_argument("--video_length", type=int, default=300, help="Lunghezza delle registrazioni video (in steps).")
 parser.add_argument("--video_interval", type=int, default=30_000, help="Intervallo tra registrazioni video (in steps).")
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
-parser.add_argument("--task", type=str, default=None, help="Nome del task.")
+parser.add_argument("--task", type=str, default="Isaac-G1Locomotion", help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
 parser.add_argument("--max_iterations", type=int, default=100_000, help="Iterazione per ogni ambiente.") 
 
@@ -33,6 +33,7 @@ from isaaclab_rl.sb3 import Sb3VecEnvWrapper, process_sb3_cfg
 from isaaclab.utils.dict import print_dict
 from isaaclab_tasks.utils import load_cfg_from_registry
 from isaaclab.utils.io import dump_pickle, dump_yaml
+from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import gymnasium as gym
 import numpy as np
@@ -45,14 +46,14 @@ from stable_baselines3.common.callbacks import CheckpointCallback, LogEveryNTime
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecNormalize
 
-from configs.env_config import ObstacleAvoidanceEnvCfg
 from task.task_register import * 
 
 
+@hydra_task_config(args_cli.task, "sb3_cfg_entry_point")
 def main():
     # Configurazione
-    task = "Isaac-G1ObstacleAvoidance"
-    env_cfg = ObstacleAvoidanceEnvCfg()
+    task = args_cli.task
+    env_cfg = load_cfg_from_registry(task, "env_cfg_entry_point")
     agent_cfg = load_cfg_from_registry(task, "sb3_cfg_entry_point")
 
     # Numero di ambienti
