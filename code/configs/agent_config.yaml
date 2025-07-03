@@ -9,11 +9,11 @@ seed: 42
 device: "auto" 
 action_noise: null
 use_sde: True   
-policy_kwargs:
+policy_kwargs: # "dict(log_std_init=-3, net_arch=[1024, 1024])"
   log_std_init: -2.0
   net_arch: 
-    pi: [256, 128, 128]
-    qf: [256, 128, 128]
+    pi: [1024, 512, 256]
+    qf: [512, 256]
 
 # Configurazione addestramento
 learning_rate: "constant_0.00073"
