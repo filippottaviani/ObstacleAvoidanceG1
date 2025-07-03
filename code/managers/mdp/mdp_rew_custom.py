@@ -1,7 +1,7 @@
 import torch, math
 
 
-def has_fallen(env, ref_link="pelvis", thr=0.5)->torch.Tensor:
+def has_fallen_tanh(env, ref_link="pelvis", slope=4)->torch.Tensor:
     robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link) # link di riferimento
     
@@ -9,7 +9,30 @@ def has_fallen(env, ref_link="pelvis", thr=0.5)->torch.Tensor:
     pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
     #print("Altezza del link ", str(base_link[1])," :", pos[:, 2].min().item())
 
-    return pos[:, 2] < thr 
+    return 1 - torch.tanh(slope * pos[:, 2])
+
+
+def has_fallen_soft(env, ref_link="pelvis", slope=2)->torch.Tensor:
+    robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
+    base_link = robot.find_bodies(ref_link) # link di riferimento
+    
+    idx = base_link[0][0]  # ID del link di riferimento
+    std_height = 0.8 
+    pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
+    #print("Altezza del link ", str(base_link[1])," :", pos[:, 2].min().item())
+
+    return slope * (pos[:, 2] - std_height)
+
+
+def has_fallen_hard(env, ref_link="pelvis", thr=0.5)->torch.Tensor:
+    robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
+    base_link = robot.find_bodies(ref_link) # link di riferimento
+    
+    idx = base_link[0][0]  # ID del link di riferimento
+    pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
+    #print("Altezza del link ", str(base_link[1])," :", pos[:, 2].min().item())
+
+    return pos[:, 2] < thr
 
 
 def moving(env, ref_link="pelvis"):

@@ -7,11 +7,13 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description="Addestramento per evitamento ostacoli di un robot umanoide.")
 parser.add_argument("--video", action="store_true", help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=300, help="Lunghezza delle registrazioni video (in steps).")
-parser.add_argument("--video_interval", type=int, default=30_000, help="Intervallo tra registrazioni video (in steps).")
+parser.add_argument("--video_interval", type=int, default=30_000, help="Intervallo tra registrazioni video (in steps).") # default 30_000
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default="Isaac-G1Locomotion", help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
-parser.add_argument("--max_iterations", type=int, default=100_000, help="Iterazione per ogni ambiente.") 
+parser.add_argument("--max_iterations", type=int, default=100_000, help="Iterazione per ogni ambiente.") # default 100_000
+parser.add_argument("--log_interval", type=int, default=1000, help="Intervallo di log in passi.")
+
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
@@ -46,10 +48,10 @@ from stable_baselines3.common.callbacks import CheckpointCallback, LogEveryNTime
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecNormalize
 
-from task.task_register import * 
+from task.task_register import *
 
 
-@hydra_task_config(args_cli.task, "sb3_cfg_entry_point")
+
 def main():
     # Configurazione
     task = args_cli.task
@@ -82,7 +84,8 @@ def main():
     dump_pickle(os.path.join(log_dir, "params", "agent.pkl"), agent_cfg)
 
     # Post-process delle configurazioni
-    agent_cfg = process_sb3_cfg(agent_cfg, env_cfg.scene.num_envs)
+    agent_cfg = process_sb3_cfg(agent_cfg)
+    #agent_cfg = process_sb3_cfg(agent_cfg, num_envs = env_cfg.scene.num_envs)
     policy_arch = agent_cfg.pop("policy")
     n_timesteps = agent_cfg.pop("n_timesteps")
 
@@ -129,7 +132,7 @@ def main():
 
     # Callback dell'agente 
     checkpoint_callback = CheckpointCallback(
-        save_freq=1000, 
+        save_freq=10000, 
         save_path=log_dir, 
         name_prefix="model", 
         verbose=2

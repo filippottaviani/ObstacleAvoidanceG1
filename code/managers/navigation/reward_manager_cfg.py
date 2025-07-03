@@ -32,12 +32,22 @@ class RewardsCfg:
     )'''
 
     
-    # Caduto
-    fallen = RewardTermCfg(
-        func=mdp_custom.has_fallen,
+    '''# Caduto (hard)
+    fallen_hard = RewardTermCfg(
+        func=mdp_custom.has_fallen_hard,
         params={
             "ref_link": "pelvis",
             "thr": 0.5 
+        },
+        weight=-10.0
+    )'''
+
+    # Caduto (soft)
+    fallen_soft = RewardTermCfg(
+        func=mdp_custom.has_fallen_soft,
+        params={
+            "ref_link": "pelvis",
+            "slope": 2 
         },
         weight=-10.0
     )

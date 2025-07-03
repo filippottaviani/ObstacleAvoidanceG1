@@ -1,12 +1,11 @@
 import os
 import gymnasium as gym
-from code.task.obstacle_avoidance.oa_env_config import ObstacleAvoidanceEnvCfg
-from code.task.navigation.nav_env_config import NavigationEnvCfg
-from code.task.locomotion.loc_env_config import LocomotionEnvCfg
+from task.obstacle_avoidance.oa_env_config import ObstacleAvoidanceEnvCfg
+from task.navigation.nav_env_config import NavigationEnvCfg
+from task.locomotion.loc_env_config import LocomotionEnvCfg
 
 # Ottieni il percorso assoluto del file di configurazione
 agent_config_path = os.path.join(os.path.dirname(__file__), "..", "configs", "agent_config.yaml")
-
 
 gym.register(
     id="Isaac-G1Locomotion",

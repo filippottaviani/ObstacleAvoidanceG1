@@ -10,18 +10,53 @@ import math
 @configclass
 class RewardsCfg:
 
-    '''alive = RewardTermCfg(
+    alive = RewardTermCfg(
         func=mdp.is_alive, 
         weight=0.5
-    )'''
+    )
+
+    termination_penalty = RewardTermCfg(
+        func=mdp.is_terminated,
+        weight=-50.0
+    )
 
     # Limita il nervosismo delle azioni
     action_rate_l2 = RewardTermCfg(
         func=mdp.action_rate_l2,
         weight=-0.01 
     )
+    
+    '''# Caduto (hard)
+    fallen_hard = RewardTermCfg(
+        func=mdp_custom.has_fallen_hard,
+        params={
+            "ref_link": "pelvis",
+            "thr": 0.5 
+        },
+        weight=-10.0
+    )'''
 
-    '''# In piedi
+    '''# Caduto (soft)
+    fallen_soft = RewardTermCfg(
+        func=mdp_custom.has_fallen_soft,
+        params={
+            "ref_link": "pelvis",
+            "slope": 2 
+        },
+        weight=-10.0
+    )'''
+
+    '''# Caduto (tanh)
+    fallen_tanh = RewardTermCfg(
+        func=mdp_custom.has_fallen_tanh,
+        params={
+            "ref_link": "pelvis",
+            "slope": 4 
+        },
+        weight=-2.0
+    )'''
+
+    # In piedi
     standing = RewardTermCfg(
         func=mdp_custom.standing,
         params={
@@ -29,17 +64,6 @@ class RewardsCfg:
             "tol": 15.0
         },
         weight=10.0
-    )'''
-
-    
-    # Caduto
-    fallen = RewardTermCfg(
-        func=mdp_custom.has_fallen,
-        params={
-            "ref_link": "pelvis",
-            "thr": 0.5 
-        },
-        weight=-10.0
     )
 
     '''# Fuori dallo spazio di lavoro
@@ -74,10 +98,25 @@ class RewardsCfg:
         },
     )
 
+    feet_slide = RewardTermCfg(
+        func=mdp.feet_slide,
+        weight=-0.1,
+        params={
+            "sensor_cfg": SceneEntityCfg(
+                "contact_sensor_feet", 
+                body_names=".*_ankle_roll_link"
+            ),
+            "asset_cfg": SceneEntityCfg(
+                "robot", 
+                body_names=".*_ankle_roll_link"
+            ),
+        },
+    )
+
     # Ricompense per il movimento
     track_lin_vel_xy_exp = RewardTermCfg(
         func=mdp.track_lin_vel_xy_exp, 
-        weight=1.0, 
+        weight=5.0, # default 1 
         params={
             "command_name": "base_velocity", 
             "std": math.sqrt(0.25)
@@ -96,7 +135,7 @@ class RewardsCfg:
     # Penalità
     lin_vel_z_l2 = RewardTermCfg(
         func=mdp.lin_vel_z_l2,
-        weight=-2.0
+        weight=-1.0
     )
 
     ang_vel_xy_l2 = RewardTermCfg(
@@ -112,4 +151,19 @@ class RewardsCfg:
     dof_acc_l2 = RewardTermCfg(
         func=mdp.joint_acc_l2, 
         weight=-2.5e-7
+    )
+
+    # Penalize deviation from default of the joints that are not essential for locomotion
+    joint_deviation_hip = RewardTermCfg(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={
+            "asset_cfg": SceneEntityCfg(
+                "robot", 
+                joint_names=[
+                    ".*_hip_yaw_joint",
+                    ".*_hip_roll_joint"
+                ]
+            )
+        },
     )

@@ -31,8 +31,8 @@ import numpy as np
 from datetime import datetime
 from pathlib import Path
 
-from code.task.obstacle_avoidance.oa_env_config import ObstacleAvoidanceEnvCfg
 from task.task_register import * 
+
 
 def main():
     # Configurazione
@@ -42,8 +42,9 @@ def main():
     
     # Percorso del modello salvato
     #model_path = os.path.expanduser("~/obstacle_avoidance_g1/code/checkpoints/models/Isaac-G1ObstacleAvoidance/2025-07-02_11-33-41.zip")
-    mod_root_path =os.path.join("~/obstacle_avoidance_g1/code/checkpoints/models", task)
-    model_path = os.path.join(mod_root_path,"2025-07-02_11-33-41.zip") 
+    root_path = os.path.expanduser("~/obstacle_avoidance_g1/code")
+    mod_root_path =os.path.join(root_path, "checkpoints/models", task)
+    model_path = os.path.join(mod_root_path,"2025-07-03_11-28-13.zip") 
 
     # Configurazione della simualazione
     env_cfg.scene.num_envs = 1

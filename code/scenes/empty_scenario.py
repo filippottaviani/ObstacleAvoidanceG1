@@ -4,7 +4,8 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass 
 
 from sensors import contact_cfg, imu_cfg, rgbd_cfg, lidar_cfg
-from robot import g1_cfg
+from robot import g1_cfg as g1_custom
+from robot import g1_cfg_alt as g1
 
 
 #env_spacing: float = 10.0  # Spaziatura dell'ambiente
@@ -13,7 +14,7 @@ from robot import g1_cfg
 class EmptyScenario(InteractiveSceneCfg):
 
     # robot
-    robot = g1_cfg.configuration
+    robot = g1_custom.configuration # carica il modello standard di IsaacLab
 
     # sensori
     #rgb_camera = rgbd_cfg.configuration_rgb
