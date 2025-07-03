@@ -28,7 +28,7 @@ class LocomotionEnvCfg(ManagerBasedRLEnvCfg):
     def __post_init__(self) -> None:
         # Impostazioni visive
         self.viewer.eye = [15, 0.0, 6.0]
-        self.viewer.lookat = [0.0, 0.0, 3.0]
+        self.viewer.lookat = [0.0, 0.0, 1.0]
 
         # Impostazioni dell'episodio
         self.decimation = 2

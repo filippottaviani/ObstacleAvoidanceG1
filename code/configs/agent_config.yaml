@@ -12,9 +12,8 @@ use_sde: True
 policy_kwargs:
   log_std_init: -2.0
   net_arch: 
-    pi: [512, 512]
-    qf: [256, 256]
-  activation_fn: ReLU
+    pi: [256, 128, 128]
+    qf: [256, 128, 128]
 
 # Configurazione addestramento
 learning_rate: "constant_0.00073"

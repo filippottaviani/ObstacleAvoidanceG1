@@ -17,14 +17,14 @@ class RewardsCfg:
 
     termination_penalty = RewardTermCfg(
         func=mdp.is_terminated,
-        weight=-50.0
+        weight=-200.0
     )
 
-    # Limita il nervosismo delle azioni
+    '''# Limita il nervosismo delle azioni
     action_rate_l2 = RewardTermCfg(
         func=mdp.action_rate_l2,
         weight=-0.01 
-    )
+    )'''
     
     '''# Caduto (hard)
     fallen_hard = RewardTermCfg(
@@ -56,7 +56,7 @@ class RewardsCfg:
         weight=-2.0
     )'''
 
-    # In piedi
+    '''# In piedi
     standing = RewardTermCfg(
         func=mdp_custom.standing,
         params={
@@ -64,7 +64,7 @@ class RewardsCfg:
             "tol": 15.0
         },
         weight=10.0
-    )
+    )'''
 
     '''# Fuori dallo spazio di lavoro
     out_of_bounds = RewardTermCfg(
@@ -87,20 +87,19 @@ class RewardsCfg:
 
     feet_air_time = RewardTermCfg(
         func=mdp.feet_air_time,
-        weight=0.125,
         params={
             "sensor_cfg": SceneEntityCfg(
                 "contact_sensor_feet", 
                 body_names=".*_ankle_roll_link"
             ),
             "command_name": "base_velocity",
-            "threshold": 0.5,
+            "threshold": 0.4,
         },
+        weight=0.25
     )
 
     feet_slide = RewardTermCfg(
         func=mdp.feet_slide,
-        weight=-0.1,
         params={
             "sensor_cfg": SceneEntityCfg(
                 "contact_sensor_feet", 
@@ -111,25 +110,26 @@ class RewardsCfg:
                 body_names=".*_ankle_roll_link"
             ),
         },
+        weight=-0.1
     )
 
     # Ricompense per il movimento
     track_lin_vel_xy_exp = RewardTermCfg(
         func=mdp.track_lin_vel_xy_exp, 
-        weight=5.0, # default 1 
         params={
             "command_name": "base_velocity", 
             "std": math.sqrt(0.25)
-        }
+        },
+        weight=1.0
     )
 
     track_ang_vel_z_exp = RewardTermCfg(
-        func=mdp.track_ang_vel_z_exp, 
-        weight=0.5, 
+        func=mdp.track_ang_vel_z_exp,  
         params={
             "command_name": "base_velocity", 
             "std": math.sqrt(0.25)
-        }
+        },
+        weight=2.0,
     )
 
     # Penalità
