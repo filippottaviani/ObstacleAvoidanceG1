@@ -5,7 +5,7 @@ from task.navigation.nav_env_config import NavigationEnvCfg
 from task.locomotion.loc_env_config import LocomotionEnvCfg
 
 # Ottieni il percorso assoluto del file di configurazione
-agent_config_path = os.path.join(os.path.dirname(__file__), "..", "configs", "agent_config.yaml")
+agent_config_path = os.path.join(os.path.dirname(__file__), "..", "agent", "config.yaml")
 
 gym.register(
     id="Isaac-G1Locomotion",

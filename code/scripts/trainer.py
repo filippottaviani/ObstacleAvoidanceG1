@@ -7,11 +7,11 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description="Addestramento per evitamento ostacoli di un robot umanoide.")
 parser.add_argument("--video", action="store_true", help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=300, help="Lunghezza delle registrazioni video (in steps).")
-parser.add_argument("--video_interval", type=int, default=30_000, help="Intervallo tra registrazioni video (in steps).") # default 30_000
+parser.add_argument("--video_interval", type=int, default=60_000, help="Intervallo tra registrazioni video (in steps).") # default 30_000
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
 parser.add_argument("--task", type=str, default="Isaac-G1Locomotion", help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
-parser.add_argument("--max_iterations", type=int, default=100_000, help="Iterazione per ogni ambiente.") # default 100_000
+parser.add_argument("--max_iterations", type=int, default=200_000, help="Iterazione per ogni ambiente.") # default 100_000
 parser.add_argument("--log_interval", type=int, default=1000, help="Intervallo di log in passi.")
 
 
@@ -35,7 +35,6 @@ from isaaclab_rl.sb3 import Sb3VecEnvWrapper, process_sb3_cfg
 from isaaclab.utils.dict import print_dict
 from isaaclab_tasks.utils import load_cfg_from_registry
 from isaaclab.utils.io import dump_pickle, dump_yaml
-from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import gymnasium as gym
 import numpy as np
@@ -45,7 +44,6 @@ from pathlib import Path
 
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import CheckpointCallback, LogEveryNTimesteps
-from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecNormalize
 
 from task.task_register import *
