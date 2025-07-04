@@ -7,15 +7,13 @@ from sensors import contact_cfg, imu_cfg, rgbd_cfg, lidar_cfg
 from robot import g1_cfg
 
 
-env_spacing: float = 10.0  # Spaziatura dell'ambiente
-
 @configclass
 class BasicScenarioCfg(InteractiveSceneCfg):
 
-    # robot
+    # Robot
     robot = g1_cfg.configuration
 
-    # sensori
+    # Sensori
     '''rgb_camera = rgbd_cfg.configuration_rgb
     depth_camera = rgbd_cfg.configuration_depth
     lidar = lidar_cfg.configuration'''
@@ -24,13 +22,13 @@ class BasicScenarioCfg(InteractiveSceneCfg):
     #cont_sensor_LH = contact_cfg.configuration_LH
     #cont_sensor_RH = contact_cfg.configuration_RH
 
-    # ground plane
+    # Ground plane
     ground = AssetBaseCfg(
         prim_path="/World/defaultGroundPlane",
         spawn=sim_utils.GroundPlaneCfg()
     )
 
-    # luce
+    # Luce
     light = AssetBaseCfg(
         prim_path="/World/Light",
         spawn=sim_utils.DomeLightCfg(
@@ -39,8 +37,8 @@ class BasicScenarioCfg(InteractiveSceneCfg):
         )
     )
 
-    '''# ostacoli
-    obstacle = AssetBaseCfg(
+    # Ostacoli
+    obstacle1 = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Obstacle1",
         spawn= sim_utils.CylinderCfg(
             radius=0.2,
@@ -58,4 +56,24 @@ class BasicScenarioCfg(InteractiveSceneCfg):
         init_state=AssetBaseCfg.InitialStateCfg(
             pos=(2.0, 0.0, 1.0),
         )
-    )'''
+    )
+
+    obstacle2 = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/Obstacle2",
+        spawn= sim_utils.CylinderCfg(
+            radius=0.2,
+            height=2,
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(
+                disable_gravity=False
+            ),
+            mass_props=sim_utils.MassPropertiesCfg(mass=100.0),
+            collision_props=sim_utils.CollisionPropertiesCfg(
+                collision_enabled=True
+            ),
+            physics_material=sim_utils.RigidBodyMaterialCfg(static_friction=1.0),
+            activate_contact_sensors=True
+        ),
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=(1.0, 0.0, -0.5),
+        )
+    )

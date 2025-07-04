@@ -1,4 +1,4 @@
-import torch, math
+import torch
 
 
 def has_fallen_tanh(env, ref_link="pelvis", slope=4)->torch.Tensor:
@@ -40,7 +40,7 @@ def moving(env, ref_link="pelvis"):
     base_link = robot.find_bodies(ref_link)  # link di riferimento
     idx = base_link[0][0]  # ID del link di riferimento
     
-    vel = robot.data.body_link_vel_w[:,idx,0:2] 
+    vel = robot.data.body_link_vel_w[:, idx, 0:2] 
     speed = torch.norm(vel, dim=1)
     #print(f"Velocità del robot: {speed}")
 
@@ -105,9 +105,5 @@ def low_velocity(env, ref_link="pelvis", tol=1.0):
     speed = torch.norm(vel, dim=1)
 
     return 1-torch.exp(-tol * speed**2)
-
-
-def stepping(env):
-    pass 
 
 

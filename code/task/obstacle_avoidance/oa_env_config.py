@@ -12,9 +12,10 @@ from isaaclab.utils import configclass
 
 @configclass
 class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
+    env_spacing = 5
 
     # configurazione dell'environment
-    scene : BasicScenarioCfg = BasicScenarioCfg(env_spacing=5)
+    scene : BasicScenarioCfg = BasicScenarioCfg(env_spacing)
     observations : ObservationsCfg = ObservationsCfg()
     actions : ActionsCfg = ActionsCfg()
     events : EventsCfg = EventsCfg()
@@ -31,7 +32,7 @@ class ObstacleAvoidanceEnvCfg(ManagerBasedRLEnvCfg):
 
         # Impostazioni dell'episodio
         self.decimation = 2
-        self.episode_length_s = 5
+        self.episode_length_s = 20
 
         # Impostazioni di simulazione
         self.sim.dt = 0.005  # step

@@ -13,9 +13,10 @@ from isaaclab.utils import configclass
 
 @configclass
 class StandingEnvCfg(ManagerBasedRLEnvCfg):
+    env_spacing = 5
 
     # configurazione dell'environment
-    scene : EmptyScenario = EmptyScenario(env_spacing=5)
+    scene : EmptyScenario = EmptyScenario(env_spacing)
     observations : ObservationsCfg = ObservationsCfg()
     actions : ActionsCfg = ActionsCfg()
     events : EventsCfg = EventsCfg()

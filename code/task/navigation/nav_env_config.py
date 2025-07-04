@@ -13,9 +13,10 @@ from isaaclab.utils import configclass
 
 @configclass
 class NavigationEnvCfg(ManagerBasedRLEnvCfg):
+    env_spacing = 5
 
     # configurazione dell'environment
-    scene : EmptyScenario = EmptyScenario(env_spacing=5)
+    scene : EmptyScenario = EmptyScenario(env_spacing)
     observations : ObservationsCfg = ObservationsCfg()
     actions : ActionsCfg = ActionsCfg()
     events : EventsCfg = EventsCfg()
@@ -32,7 +33,7 @@ class NavigationEnvCfg(ManagerBasedRLEnvCfg):
 
         # Impostazioni dell'episodio
         self.decimation = 2
-        self.episode_length_s = 5
+        self.episode_length_s = 15
 
         # Impostazioni di simulazione
         self.sim.dt = 0.005  # step

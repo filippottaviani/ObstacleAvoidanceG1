@@ -32,7 +32,7 @@ class LocomotionEnvCfg(ManagerBasedRLEnvCfg):
 
         # Impostazioni dell'episodio
         self.decimation = 2
-        self.episode_length_s = 5
+        self.episode_length_s = 10
 
         # Impostazioni di simulazione
         self.sim.dt = 0.005  # step
