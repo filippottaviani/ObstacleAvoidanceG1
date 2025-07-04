@@ -13,4 +13,4 @@ Il progetto è organizzato in diverse cartelle per esigenze di modularità e chi
 - **_scenes_**: raccoglie le descrizioni degli scenari di simulazione.
 - **_scripts_**: ci sono gli script di avvio per l'addestramento e per il test.
 - **_sensors_**: ospita le descrizioni dei sensori montati sul robot.
-- **_task_**: contiene la caratterizzazione e la registrazinoe dei tre task: locomozione, navigazione ed evitamento ostacoli.
+- **_task_**: contiene la caratterizzazione e la registrazinoe dei quattro task: stazionamento, locomozione, navigazione ed evitamento ostacoli.

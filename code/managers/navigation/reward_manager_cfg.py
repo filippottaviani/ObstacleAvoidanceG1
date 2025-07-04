@@ -26,7 +26,7 @@ class RewardsCfg:
         func=mdp_custom.standing,
         params={
             "ref_link": "pelvis",
-            "tol": 15.0
+            "sharpness": 100.0
         },
         weight=10.0
     )'''

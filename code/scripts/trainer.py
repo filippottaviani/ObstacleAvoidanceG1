@@ -1,29 +1,25 @@
+from isaaclab.app import AppLauncher
 import argparse
 
-from isaaclab.app import AppLauncher
 
-
-# add argparse arguments
+# Definizione argomenti
 parser = argparse.ArgumentParser(description="Addestramento per evitamento ostacoli di un robot umanoide.")
 parser.add_argument("--video", action="store_true", help="Registrazione video durante l'addestramento.")
 parser.add_argument("--video_length", type=int, default=300, help="Lunghezza delle registrazioni video (in steps).")
 parser.add_argument("--video_interval", type=int, default=60_000, help="Intervallo tra registrazioni video (in steps).") # default 30_000
 parser.add_argument("--num_envs", type=int, default=1, help="Numero di ambienti da simulare.")
-parser.add_argument("--task", type=str, default="Isaac-G1Locomotion", help="Nome del task.")
+parser.add_argument("--task", type=str, default="Isaac-G1Standing", help="Nome del task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed utilizzato.")
 parser.add_argument("--max_iterations", type=int, default=200_000, help="Iterazione per ogni ambiente.") # default 100_000
 parser.add_argument("--log_interval", type=int, default=1000, help="Intervallo di log in passi.")
 
-
-# append AppLauncher cli args
+# Aggiunta dei parser
 AppLauncher.add_app_launcher_args(parser)
-# parse the arguments
 args_cli = parser.parse_args()
-# always enable cameras to record video
 if args_cli.video:
     args_cli.enable_cameras = True
 
-# launch omniverse app
+# Lancio di Omniverse
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
@@ -47,7 +43,6 @@ from stable_baselines3.common.callbacks import CheckpointCallback, LogEveryNTime
 from stable_baselines3.common.vec_env import VecNormalize
 
 from task.task_register import *
-
 
 
 def main():

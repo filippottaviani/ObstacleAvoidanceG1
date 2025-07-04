@@ -1,6 +1,8 @@
 from isaaclab.app import AppLauncher
 import argparse
 
+
+# Definizione argomenti
 parser = argparse.ArgumentParser(description="Test del modello per evitamento ostacoli di un robot umanoide.")
 parser.add_argument("--num_episodes", type=int, default=10, help="Numero di episodi da simulare.")
 parser.add_argument("--task", type=str, default="Isaac-G1Locomotion", help="Nome del task.")
@@ -8,9 +10,11 @@ parser.add_argument("--video" , action="store_true", default=False, help="Regist
 parser.add_argument("--video_length", type=int, default=200, help="Lunghezza delle registrazioni video (in steps).")
 parser.add_argument("--video_interval", type=int, default=2000, help="Intervallo tra registrazioni video (in steps).")
 
+# Aggiunta dei parser
 AppLauncher.add_app_launcher_args(parser)
 args_cli = parser.parse_args()
 
+# Lancio di Omniverse
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
@@ -27,7 +31,6 @@ from stable_baselines3.common.vec_env import VecNormalize
 
 import gymnasium as gym
 import os, time, torch
-import numpy as np
 from datetime import datetime
 from pathlib import Path
 
@@ -58,7 +61,7 @@ def main():
     log_root_path = os.path.abspath(log_root_path)
     
     # impostazione video logging
-    video_root_path = os.path.join(root_path,"videos", task)
+    video_root_path = os.path.join(root_path, "videos", task)
     run_info = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     video_dir = os.path.join(video_root_path, run_info)
 

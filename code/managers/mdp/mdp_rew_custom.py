@@ -24,7 +24,7 @@ def has_fallen_soft(env, ref_link="pelvis", slope=2)->torch.Tensor:
     return slope * (pos[:, 2] - std_height)
 
 
-def has_fallen_hard(env, ref_link="pelvis", thr=0.5)->torch.Tensor:
+def has_fallen_hard(env, ref_link="pelvis", thr=0.3)->torch.Tensor:
     robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link) # link di riferimento
     
@@ -87,7 +87,7 @@ def out_of_manual_bound(env, max_dist=10, ref_link="pelvis"):
     return -out
     
 
-def standing(env, ref_link="pelvis", tol=15) -> torch.Tensor:
+def standing(env, ref_link="pelvis", sharpness=15) -> torch.Tensor:
     robot = env.scene["robot"]  # Recupera l'entità robot dalla scena
     base_link = robot.find_bodies(ref_link) # link di riferimento
     std_height = 0.8 
@@ -95,7 +95,7 @@ def standing(env, ref_link="pelvis", tol=15) -> torch.Tensor:
     idx = base_link[0][0]  # ID del link di riferimento
     pos = robot.data.body_link_pos_w[:,idx,:] # Posizione del link di riferimento
 
-    return torch.exp(-tol * ((pos[:, 2] - std_height) ** 2)) # tentativo gauss
+    return torch.exp(-sharpness * ((pos[:, 2] - std_height) ** 2)) # tentativo gauss
 
 
 def low_velocity(env, ref_link="pelvis", tol=1.0):
