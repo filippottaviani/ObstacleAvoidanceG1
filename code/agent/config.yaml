@@ -9,12 +9,12 @@ seed: 42
 device: "auto" 
 action_noise: null
 use_sde: True   
-policy_kwargs: # "dict(log_std_init=-3, net_arch=[1024, 1024])"
+policy_kwargs:
   log_std_init: -3.0
   n_critics: 2
   net_arch: 
-    pi: [512, 512, 512]
-    qf: [256, 256]
+    pi: [512, 512, 512] # rete actor
+    qf: [256, 256] # rete critic
 
 # Configurazione addestramento
 learning_rate: "constant_0.00073"
@@ -22,10 +22,10 @@ learning_starts: 10_000  # quando iniziare apprendere la policy
 n_timesteps: 1_000_000 # numero totale di timesteps per l'addestramento
 train_freq: 64
 gradient_steps: 64
+batch_size: 1024 # default 512  
+buffer_size: 2_000_000 
 
 # Normalizzazioni
 normalize_input: True
-normalize_value: False # da rivere a seconda della variabilità delle ricompense 
-batch_size: 1024 # default 512         
-buffer_size: 2_000_000 
+normalize_value: False # da rivere a seconda della variabilità delle ricompense        
 clip_obs: 10.0         

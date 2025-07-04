@@ -1,15 +1,15 @@
 # dimensioni rgbd e lidar
-rgb_x = 192
-rgb_y = 108
-depth_x = 128
-depth_y = 72
-vision = False
+rgb_x = 1920
+rgb_y = 1080
+depth_x = 1280
+depth_y = 720
+vision = True
 
 # feature extraction
 rgb_feat = 128
 depth_feat = 128
 lidar_feat = 128
-feat_extr = True
+feat_extr = False
 
 # dimensioni osservazioni
 rgb_dim = rgb_x * rgb_y
@@ -29,11 +29,11 @@ if vision:
 else:
     obs_dim = joint_pos + joint_vel + imu_acc_dim + imu_vel_dim + target_dim 
 action_dim = 12
-num_envs = 64
+num_envs = 8192
 buffer_size = 2_000_000
 bytes_per_element = 4  
-reward_dim = 9
-done_dim = 5
+reward_dim = 4
+done_dim = 2
 
 num_elements = buffer_size * (obs_dim + obs_dim + action_dim + reward_dim + done_dim) * num_envs
 mem_bytes = num_elements * bytes_per_element

@@ -1,19 +1,18 @@
 from isaaclab.managers import RewardTermCfg, SceneEntityCfg
 from isaaclab.utils import configclass
-from isaaclab.envs import mdp
 from managers.mdp import mdp_rew_custom as mdp_custom
-import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
-import isaaclab.envs.mdp.rewards as mdp1
+import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp1
+import isaaclab.envs.mdp.rewards as mdp
 import math
 
 
 @configclass
 class RewardsCfg:
 
-    '''alive = RewardTermCfg(
+    alive = RewardTermCfg(
         func=mdp.is_alive, 
         weight=0.5
-    )'''
+    )
 
     # Limita il nervosismo delle azioni
     action_rate_l2 = RewardTermCfg(
@@ -42,7 +41,7 @@ class RewardsCfg:
         weight=-10.0
     )'''
 
-    # Caduto (soft)
+    '''# Caduto (soft)
     fallen_soft = RewardTermCfg(
         func=mdp_custom.has_fallen_soft,
         params={
@@ -50,7 +49,7 @@ class RewardsCfg:
             "slope": 2 
         },
         weight=-10.0
-    )
+    )'''
 
     '''# Fuori dallo spazio di lavoro
     out_of_bounds = RewardTermCfg(
@@ -72,8 +71,7 @@ class RewardsCfg:
     )'''
 
     feet_air_time = RewardTermCfg(
-        func=mdp.feet_air_time,
-        weight=0.125,
+        func=mdp1.feet_air_time,
         params={
             "sensor_cfg": SceneEntityCfg(
                 "contact_sensor_feet", 
@@ -82,16 +80,17 @@ class RewardsCfg:
             "command_name": "base_velocity",
             "threshold": 0.5,
         },
+        weight=0.125,
     )
 
     # Ricompense per il movimento
     track_lin_vel_xy_exp = RewardTermCfg(
-        func=mdp.track_lin_vel_xy_exp, 
-        weight=1.0, 
+        func=mdp.track_lin_vel_xy_exp,
         params={
             "command_name": "base_velocity", 
             "std": math.sqrt(0.25)
-        }
+        },
+        weight=1.0, 
     )
 
     track_ang_vel_z_exp = RewardTermCfg(
@@ -124,8 +123,8 @@ class RewardsCfg:
         weight=-2.5e-7
     )
 
-    '''# Colpisce un ostacolo
-    hit_obstacle = RewardTermCfg(
+    # Colpisce un ostacolo
+    hit_obstacle_LH = RewardTermCfg(
         func=mdp.undesired_contacts,
         params={
             "threshold": 0.1,  # soglia di contatto
@@ -133,28 +132,39 @@ class RewardsCfg:
                 name="cont_sensor_LH"  # nome del sensore dell'ostacolo
             ),
         },
-        weight=-0.5,
-    )'''
+        weight=-10.0,
+    )
 
-    '''# Va nella direzioned dell'obiettivo
+    hit_obstacle_RH = RewardTermCfg(
+        func=mdp.undesired_contacts,
+        params={
+            "threshold": 0.1,  # soglia di contatto
+            "sensor_cfg": SceneEntityCfg(
+                name="cont_sensor_RH"  # nome del sensore dell'ostacolo
+            ),
+        },
+        weight=-10.0,
+    )
+
+    # Va nella direzioned dell'obiettivo
     heading_tracking= RewardTermCfg(
         func=mdp_custom.heading_error,
         params={
             "command_name": "target"
         },
         weight=1.0
-    )'''
+    )
 
-    '''# Si avvicina all'obiettivo
+    # Si avvicina all'obiettivo
     position_tracking = RewardTermCfg(
         func=mdp_custom.position_error,
         params={
             "command_name": "target"
         },
         weight=-1.0,
-    )'''
+    )
 
-    '''# Obiettivo raggiunto
+    # Obiettivo raggiunto
     reach_goal = RewardTermCfg(
         func=mdp_custom.target_reached,
         params={ 
@@ -162,4 +172,4 @@ class RewardsCfg:
             "threshold": 0.3
         },
         weight=100.0
-    )'''
+    )

@@ -32,8 +32,8 @@ class StandingEnvCfg(ManagerBasedRLEnvCfg):
         self.viewer.lookat = [0.0, 0.0, 1.0]
 
         # Impostazioni dell'episodio
-        self.decimation = 2
-        self.episode_length_s = 5
+        self.decimation = 4
+        self.episode_length_s = 10
 
         # Impostazioni di simulazione
         self.sim.dt = 0.005  # step

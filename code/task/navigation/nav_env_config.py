@@ -32,8 +32,8 @@ class NavigationEnvCfg(ManagerBasedRLEnvCfg):
         self.viewer.lookat = [0.0, 0.0, 3.0]
 
         # Impostazioni dell'episodio
-        self.decimation = 2
-        self.episode_length_s = 15
+        self.decimation = 4
+        self.episode_length_s = 30
 
         # Impostazioni di simulazione
         self.sim.dt = 0.005  # step

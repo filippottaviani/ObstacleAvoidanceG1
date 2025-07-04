@@ -2,8 +2,7 @@ from isaaclab.managers import RewardTermCfg, SceneEntityCfg
 from isaaclab.utils import configclass
 from isaaclab.envs import mdp
 from managers.mdp import mdp_rew_custom as mdp_custom
-import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
-import isaaclab.envs.mdp.rewards as mdp1
+import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp_vel
 import math
 
 
@@ -44,19 +43,27 @@ class RewardsCfg:
 
     # Ricompense per il (non) movimento
     track_lin_vel_xy_exp = RewardTermCfg(
-        func=mdp.track_lin_vel_xy_exp, 
+        func=mdp_vel.track_lin_vel_xy_exp, 
         params={
             "command_name": "base_velocity", 
-            "std": math.sqrt(0.25)
+            "std": math.sqrt(0.25),
+            "asset_cfg": SceneEntityCfg(
+                name='robot',
+                joint_names='pelvis'
+            )
         },
         weight=1.0
     )
 
     track_ang_vel_z_exp = RewardTermCfg(
-        func=mdp.track_ang_vel_z_exp,  
+        func=mdp_vel.track_ang_vel_z_exp,  
         params={
             "command_name": "base_velocity", 
-            "std": math.sqrt(0.25)
+            "std": math.sqrt(0.25),
+            "asset_cfg": SceneEntityCfg(
+                name='robot',
+                joint_names='pelvis'
+            )
         },
         weight=2.0,
     )
